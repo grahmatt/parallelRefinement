@@ -1,26 +1,27 @@
 // F
-rhoS = fluxLimiter
+rho_S = fluxLimiter
 (
     cell.rho[i][j-1],
     cell.rho[i][j],
     cell.rho[i][j+1],
     cell.dx
 );
-xMomentS = fluxLimiter
+Mx_S = fluxLimiter
 (
-    cell.xMomentum[i][j-1],
-    cell.xMomentum[i][j],
-    cell.xMomentum[i][j+1],
+    cell.Mx[i][j-1],
+    cell.Mx[i][j],
+    cell.Mx[i][j+1],
     cell.dx
 );
-yMomentS = fluxLimiter
+My_S = fluxLimiter
 (
-    cell.yMomentum[i][j-1],
-    cell.yMomentum[i][j],
-    cell.yMomentum[i][j+1],
+    cell.My[i][j-1],
+    cell.My[i][j],
+    cell.My[i][j+1],
     cell.dx
 );
 
-rho_Plus = soundSpeed*(cell.rho + 0.5*cell.dx*(1.0 - courant*rhoS));
-rho_Minus = soundSpeed*(cell.rho - 0.5*cell.dx*(1.0 - courant*rhoS));
-xMoment_Plus = 
+rho_Plus = soundSpeed*(cell.rho + 0.5*cell.dx*(1.0 - courant*rho_S));
+rho_Minus = soundSpeed*(cell.rho - 0.5*cell.dx*(1.0 - courant*rho_S));
+Mx_Plus = soundSpeed*(cell.Mx + 0.5*cell.dx*(1.0 - courant*Mx_S));
+Mx_Minus =
