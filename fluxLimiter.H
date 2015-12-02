@@ -3,17 +3,17 @@ double fluxLimiter
     double& u_Minus,
     double& u,
     double& u_Plus,
-    double& distance,
-    // char& method
-) {
-    int sjPlus;
-    int sjMinus;
+    double& distance // char& method
+) 
+{
+    double sjPlus;
+    double sjMinus;
 
     // Superbee
     sjPlus = (u_Plus - u)/distance;
     sjMinus = (u - u_Minus)/distance;
 
-    return sign(sjMinus + sjPlus)*max
+    return copysign(1.0,(sjMinus+sjPlus))*max
         (
             0.0,max
             (
