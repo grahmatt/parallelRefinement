@@ -53,6 +53,7 @@ struct grid {
 // };
 
 #include "fluxLimiter.H"
+#include "reconstructFlux.H"
 
 int main(int argc, char** argv){
 
@@ -145,15 +146,11 @@ int main(int argc, char** argv){
     tunnel.MyG_Plus[tunnel.xPoints][tunnel.yPoints];
     tunnel.MyG_Minus[tunnel.xPoints][tunnel.yPoints];
 
-    // MUSCL Half Time
-    grid tunnel_halfTime = tunnel;
-    for (i=0; i < tunnel.yPoints; ++i) {
-        for (j=0; j < tunnel.xPoints; ++j) {
-            #include "halfMUSCL.H"
-            // xS_Plus = 
-        }
-    }
 
+    double soundSpeed = 1.0;
+    double courant = soundSpeed*tunnel.dt/tunnel.dx;  // Should this be sounds speed or u, v, or magnitude??
+
+    #include "MUSCL.H"
 
 }
 
