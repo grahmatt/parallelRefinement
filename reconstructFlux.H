@@ -457,12 +457,3 @@ void reconstructFlux
         cellHalf.MyBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.MyBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*My_S));
     }
 }
-
-    // // Roe Solver x-dir
-    // uAveRoe = (Mx_Plus/sqrt(rho_Plus) + Mx_Minus/sqrt(rho_Minus))/(sqrt(rho_Plus) + sqrt(rho_Minus));
-    // vAveRoe = (My_Plus/sqrt(rho_Plus) + My_Minus/sqrt(rho_Minus))/(sqrt(rho_Plus) + sqrt(rho_Minus));
-    // lambda_1 = abs(uAveRoe);
-    // lambda_2 = abs(uAveRoe + soundSpeed);
-    // lambda_3 = abs(uAveRoe - soundSpeed);
-    // alpha_1 = vAveRoe*(rho_Plus - rho_Minus)
-    

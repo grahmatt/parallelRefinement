@@ -60,6 +60,7 @@ struct grid {
 
 #include "fluxLimiter.H"
 #include "reconstructFlux.H"
+#include "roeSolver.H"
 
 int main(int argc, char** argv){
 

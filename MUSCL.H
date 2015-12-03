@@ -28,7 +28,12 @@ for (i=0; i < tunnel.yPoints; ++i) {
 // MUSCL Full Time
 for (i=0; i < tunnel.yPoints; ++i) {
     for (j=0; j < tunnel.xPoints; ++j) {
-        reconstructFlux(i,j,tunnel_halfTime,tunnel,courant,soundSpeed);
-        
+        reconstructFlux(i,j,tunnel_halfTime,tunnel,courant,soundSpeed);   
     }
 }
+for (i=0; i <= tunnel.yPoints; ++i) {
+    for (j=0; j <= tunnel.xPoints; ++j) {
+        roeSolver(i,j,tunnel_halfTime,tunnel,soundSpeed);   
+    }
+}
+
