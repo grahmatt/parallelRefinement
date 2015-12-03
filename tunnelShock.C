@@ -16,6 +16,12 @@ struct grid {
     vector<vector<double> > rhoBCsBT;
     vector<vector<double> > MxBCsBT;
     vector<vector<double> > MyBCsBT;
+    vector<vector<double> > rhoBCsLR_PlusMinus;
+    vector<vector<double> > MxBCsLR_PlusMinus;
+    vector<vector<double> > MyBCsLR_PlusMinus;
+    vector<vector<double> > rhoBCsBT_PlusMinus;
+    vector<vector<double> > MxBCsBT_PlusMinus;
+    vector<vector<double> > MyBCsBT_PlusMinus;
     vector<vector<double> > rhoF_Plus;
     vector<vector<double> > rhoF_Minus;
     vector<vector<double> > rhoG_Plus;
@@ -82,34 +88,54 @@ int main(int argc, char** argv){
         if (i == 0) { // Left
             tunnel.connect[i] = false;
             tunnel.bounds[i] = "value";
-            tunnel.rhoBCsLR[tunnel.yPoints][2];
-            tunnel.MxBCsLR[tunnel.yPoints][2];
-            tunnel.MyBCsLR[tunnel.yPoints][2];
+            tunnel.rhoBCsLR[tunnel.yPoints][4];
+            tunnel.MxBCsLR[tunnel.yPoints][4];
+            tunnel.MyBCsLR[tunnel.yPoints][4];
+            // For Roe Solver
+            tunnel.rhoBCsLR_PlusMinus[tunnel.yPoints][2];
+            tunnel.MxBCsLR_PlusMinus[tunnel.yPoints][2];
+            tunnel.MyBCsLR_PlusMinus[tunnel.yPoints][2];
             for (n=0; n < tunnel.yPoints; ++n) {
                 tunnel.rhoBCsLR[n][0] = rhoShock;
-                tunnel.MxBCsLR[n][0] = 0.0;
+                tunnel.MxBCsLR[n][0] = 0.0;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
                 tunnel.MyBCsLR[n][0] = 0.0;
+                // For Roe Solver
+                tunnel.rhoBCsLR[n][2] = rhoShock;
+                tunnel.MxBCsLR[n][2] = 0.0;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
+                tunnel.MyBCsLR[n][2] = 0.0;
             }
         }
         else if (i == 1) { // Right
             tunnel.connect[i] = true;
-            tunnel.bounds[i] = "outside";
+            tunnel.bounds[i] = "zeroGradient";
             for (n=0; n < tunnel.yPoints; ++n) {
                 tunnel.rhoBCsLR[n][1] = rhoStart;
                 tunnel.MxBCsLR[n][1] = 0.0;
                 tunnel.MyBCsLR[n][1] = 0.0;
+                // For Roe Solver
+                tunnel.rhoBCsLR[n][3] = rhoStart;
+                tunnel.MxBCsLR[n][3] = 0.0;
+                tunnel.MyBCsLR[n][3] = 0.0;
             }
         }
         else if (i == 2) { // Bottom
             tunnel.connect[i] = false;
             tunnel.bounds[i] = "wall";
-            tunnel.rhoBCsBT[2][tunnel.xPoints];
-            tunnel.MxBCsBT[2][tunnel.xPoints];
-            tunnel.MyBCsBT[2][tunnel.xPoints];
+            tunnel.rhoBCsBT[4][tunnel.xPoints];
+            tunnel.MxBCsBT[4][tunnel.xPoints];
+            tunnel.MyBCsBT[4][tunnel.xPoints];
+            // For Roe Solver
+            tunnel.rhoBCsBT_PlusMinus[2][tunnel.xPoints];
+            tunnel.MxBCsBT_PlusMinus[2][tunnel.xPoints];
+            tunnel.MyBCsBT_PlusMinus[2][tunnel.xPoints];
             for (n=0; n < tunnel.xPoints; ++n) {
                 tunnel.rhoBCsBT[0][n] = rhoStart;
                 tunnel.MxBCsBT[0][n] = 0.0;
                 tunnel.MyBCsBT[0][n] = 0.0;
+                // For Roe Solver
+                tunnel.rhoBCsBT[2][n] = rhoStart;
+                tunnel.MxBCsBT[2][n] = 0.0;
+                tunnel.MyBCsBT[2][n] = 0.0;
             }
         }
         else { // Top
@@ -119,6 +145,10 @@ int main(int argc, char** argv){
                 tunnel.rhoBCsBT[1][n] = rhoStart;
                 tunnel.MxBCsBT[1][n] = 0.0;
                 tunnel.MyBCsBT[1][n] = 0.0;
+                // For Roe Solver
+                tunnel.rhoBCsBT[3][n] = rhoStart;
+                tunnel.MxBCsBT[3][n] = 0.0;
+                tunnel.MyBCsBT[3][n] = 0.0;
             }
         }
     }
@@ -148,7 +178,7 @@ int main(int argc, char** argv){
 
 
     double soundSpeed = 1.0;
-    double courant = soundSpeed*tunnel.dt/tunnel.dx;  // Should this be sounds speed or u, v, or magnitude??
+    double courant = 0.5*soundSpeed*tunnel.dt/tunnel.dx;  // Should this be sounds speed or u, v, or magnitude?? tunnel.dt/2
 
     #include "MUSCL.H"
 

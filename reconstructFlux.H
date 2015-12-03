@@ -2,7 +2,7 @@ void reconstructFlux
 (
     int i,
     int j,
-    grid& cell,
+    grid& cellHalf,
     double courant,
     double soundSpeed
 ) 
@@ -14,361 +14,455 @@ void reconstructFlux
     if (j == 0) {
         rho_S = fluxLimiter
         (
-            cell.rhoBCsLR[i][0],
-            cell.rho[i][j],
-            cell.rho[i][j+1],
-            cell.dx
+            cellHalf.rhoBCsLR[i][0],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i][j+1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.MxBCsLR[i][0],
-            cell.Mx[i][j],
-            cell.Mx[i][j+1],
-            cell.dx
+            cellHalf.MxBCsLR[i][0],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i][j+1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.MyBCsLR[i][0],
-            cell.My[i][j],
-            cell.My[i][j+1],
-            cell.dx
+            cellHalf.MyBCsLR[i][0],
+            cellHalf.My[i][j],
+            cellHalf.My[i][j+1],
+            cellHalf.dx
         );
     }
-    else if (j+1 == cell.xPoints) {
+    else if (j+1 == cellHalf.xPoints) {
         rho_S = fluxLimiter
         (
-            cell.rho[i][j-1],
-            cell.rho[i][j],
-            cell.rhoBCsLR[i][1],
-            cell.dx
+            cellHalf.rho[i][j-1],
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsLR[i][1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i][j-1],
-            cell.Mx[i][j],
-            cell.MxBCsLR[i][1],
-            cell.dx
+            cellHalf.Mx[i][j-1],
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsLR[i][1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.My[i][j-1],
-            cell.My[i][j],
-            cell.MyBCsLR[i][1],
-            cell.dx
+            cellHalf.My[i][j-1],
+            cellHalf.My[i][j],
+            cellHalf.MyBCsLR[i][1],
+            cellHalf.dx
         );
     }
     else {
         rho_S = fluxLimiter
         (
-            cell.rho[i][j-1],
-            cell.rho[i][j],
-            cell.rho[i][j+1],
-            cell.dx
+            cellHalf.rho[i][j-1],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i][j+1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i][j-1],
-            cell.Mx[i][j],
-            cell.Mx[i][j+1],
-            cell.dx
+            cellHalf.Mx[i][j-1],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i][j+1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.My[i][j-1],
-            cell.My[i][j],
-            cell.My[i][j+1],
-            cell.dx
+            cellHalf.My[i][j-1],
+            cellHalf.My[i][j],
+            cellHalf.My[i][j+1],
+            cellHalf.dx
         );
     }
-    rho_Plus = soundSpeed*(cell.rho[i][j] + 0.5*cell.dx*(1.0 - courant*rho_S));
-    rho_Minus = soundSpeed*(cell.rho[i][j] - 0.5*cell.dx*(1.0 - courant*rho_S));
-    Mx_Plus = soundSpeed*(cell.Mx[i][j] + 0.5*cell.dx*(1.0 - courant*Mx_S));
-    Mx_Minus = soundSpeed*(cell.Mx[i][j] - 0.5*cell.dx*(1.0 - courant*Mx_S));
-    My_Plus = soundSpeed*(cell.My[i][j] + 0.5*cell.dx*(1.0 - courant*My_S));
-    My_Minus = soundSpeed*(cell.My[i][j] - 0.5*cell.dx*(1.0 - courant*My_S));
+    rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+    rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+    Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+    Mx_Minus = soundSpeed*(cellHalf.Mx[i][j] - 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+    My_Plus = soundSpeed*(cellHalf.My[i][j] + 0.5*cellHalf.dx*(1.0 - courant*My_S));
+    My_Minus = soundSpeed*(cellHalf.My[i][j] - 0.5*cellHalf.dx*(1.0 - courant*My_S));
 
-    cell.rhoF_Plus[i][j] = Mx_Plus;
-    cell.rhoF_Minus[i][j] = Mx_Minus;
-    cell.MxF_Plus[i][j] = pow(Mx_Plus,2.0)/rho_Plus + 
+    cellHalf.rhoF_Plus[i][j] = Mx_Plus;
+    cellHalf.rhoF_Minus[i][j] = Mx_Minus;
+    cellHalf.MxF_Plus[i][j] = pow(Mx_Plus,2.0)/rho_Plus + 
         pow(soundSpeed, 2.0)*rho_Plus;
-    cell.MxF_Minus[i][j] = pow(Mx_Minus,2.0)/rho_Minus + 
+    cellHalf.MxF_Minus[i][j] = pow(Mx_Minus,2.0)/rho_Minus + 
         pow(soundSpeed, 2.0)*rho_Minus;
-    cell.MyF_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
-    cell.MyF_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
+    cellHalf.MyF_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
+    cellHalf.MyF_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
 
 
     // G - Reconstruction and Fluxes
     if (i == 0) {
         rho_S = fluxLimiter
         (
-            cell.rhoBCsBT[0][j],
-            cell.rho[i][j],
-            cell.rho[i+1][j],
-            cell.dy
+            cellHalf.rhoBCsBT[0][j],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i+1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.MxBCsBT[0][j],
-            cell.Mx[i][j],
-            cell.Mx[i+1][j],
-            cell.dy
+            cellHalf.MxBCsBT[0][j],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i+1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.MyBCsBT[0][j],
-            cell.My[i][j],
-            cell.My[i+1][j],
-            cell.dy
+            cellHalf.MyBCsBT[0][j],
+            cellHalf.My[i][j],
+            cellHalf.My[i+1][j],
+            cellHalf.dy
         );
     }
-    else if (i+1 == cell.yPoints) {
+    else if (i+1 == cellHalf.yPoints) {
         rho_S = fluxLimiter
         (
-            cell.rho[i-1][j],
-            cell.rho[i][j],
-            cell.rhoBCsBT[1][j],
-            cell.dy
+            cellHalf.rho[i-1][j],
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsBT[1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i-1][j],
-            cell.Mx[i][j],
-            cell.MxBCsBT[1][j],
-            cell.dy
+            cellHalf.Mx[i-1][j],
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsBT[1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.My[i-1][j],
-            cell.My[i][j],
-            cell.MyBCsBT[1][j],
-            cell.dy
+            cellHalf.My[i-1][j],
+            cellHalf.My[i][j],
+            cellHalf.MyBCsBT[1][j],
+            cellHalf.dy
         );
     }
     else {
         rho_S = fluxLimiter
         (
-            cell.rho[i-1][j],
-            cell.rho[i][j],
-            cell.rho[i+1][j],
-            cell.dy
+            cellHalf.rho[i-1][j],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i+1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i-1][j],
-            cell.Mx[i][j],
-            cell.Mx[i+1][j],
-            cell.dy
+            cellHalf.Mx[i-1][j],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i+1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.My[i-1][j],
-            cell.My[i][j],
-            cell.My[i+1][j],
-            cell.dy
+            cellHalf.My[i-1][j],
+            cellHalf.My[i][j],
+            cellHalf.My[i+1][j],
+            cellHalf.dy
         );
     }
-    rho_Plus = soundSpeed*(cell.rho[i][j] + 0.5*cell.dx*(1.0 - courant*rho_S));
-    rho_Minus = soundSpeed*(cell.rho[i][j] - 0.5*cell.dx*(1.0 - courant*rho_S));
-    Mx_Plus = soundSpeed*(cell.Mx[i][j] + 0.5*cell.dx*(1.0 - courant*Mx_S));
-    Mx_Minus = soundSpeed*(cell.Mx[i][j] - 0.5*cell.dx*(1.0 - courant*Mx_S));
-    My_Plus = soundSpeed*(cell.My[i][j] + 0.5*cell.dx*(1.0 - courant*My_S));
-    My_Minus = soundSpeed*(cell.My[i][j] - 0.5*cell.dx*(1.0 - courant*My_S));
+    rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+    rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+    Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+    Mx_Minus = soundSpeed*(cellHalf.Mx[i][j] - 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+    My_Plus = soundSpeed*(cellHalf.My[i][j] + 0.5*cellHalf.dy*(1.0 - courant*My_S));
+    My_Minus = soundSpeed*(cellHalf.My[i][j] - 0.5*cellHalf.dy*(1.0 - courant*My_S));
 
-    cell.rhoG_Plus[i][j] = My_Plus;
-    cell.rhoG_Minus[i][j] = My_Minus;
-    cell.MxG_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
-    cell.MxG_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
-    cell.MyG_Plus[i][j] = pow(My_Plus,2.0)/rho_Plus + 
+    cellHalf.rhoG_Plus[i][j] = My_Plus;
+    cellHalf.rhoG_Minus[i][j] = My_Minus;
+    cellHalf.MxG_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
+    cellHalf.MxG_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
+    cellHalf.MyG_Plus[i][j] = pow(My_Plus,2.0)/rho_Plus + 
         pow(soundSpeed, 2.0)*rho_Plus;
-    cell.MyG_Minus[i][j] = pow(My_Minus,2.0)/rho_Minus + 
+    cellHalf.MyG_Minus[i][j] = pow(My_Minus,2.0)/rho_Minus + 
         pow(soundSpeed, 2.0)*rho_Minus;
 }
+
 void reconstructFlux
 (
     int i,
     int j,
-    grid& cell,
+    grid& cellHalf,
+    grid& cellFull,
     double courant,
-    double soundSpeed,
-    bool roe
+    double soundSpeed
 ) 
 {
-    if (!roe) {
-        cout << "roe = FALSE, no other option solving using roe solver\n";
-    }
     double rho_S, Mx_S, My_S, rho_Plus, rho_Minus, Mx_Plus, Mx_Minus, My_Plus, 
         My_Minus;
     
-    // F* - Reconstuction and Fluxes using Roe Solver
+    // Reconstuction for left/right values into F half time to use in Roe Solver
     if (j == 0) {
         rho_S = fluxLimiter
         (
-            cell.rhoBCsLR[i][0],
-            cell.rho[i][j],
-            cell.rho[i][j+1],
-            cell.dx
+            cellHalf.rhoBCsLR[i][0],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i][j+1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.MxBCsLR[i][0],
-            cell.Mx[i][j],
-            cell.Mx[i][j+1],
-            cell.dx
+            cellHalf.MxBCsLR[i][0],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i][j+1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.MyBCsLR[i][0],
-            cell.My[i][j],
-            cell.My[i][j+1],
-            cell.dx
+            cellHalf.MyBCsLR[i][0],
+            cellHalf.My[i][j],
+            cellHalf.My[i][j+1],
+            cellHalf.dx
         );
     }
-    else if (j+1 == cell.xPoints) {
+    else if (j+1 == cellHalf.xPoints) {
         rho_S = fluxLimiter
         (
-            cell.rho[i][j-1],
-            cell.rho[i][j],
-            cell.rhoBCsLR[i][1],
-            cell.dx
+            cellHalf.rho[i][j-1],
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsLR[i][1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i][j-1],
-            cell.Mx[i][j],
-            cell.MxBCsLR[i][1],
-            cell.dx
+            cellHalf.Mx[i][j-1],
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsLR[i][1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.My[i][j-1],
-            cell.My[i][j],
-            cell.MyBCsLR[i][1],
-            cell.dx
+            cellHalf.My[i][j-1],
+            cellHalf.My[i][j],
+            cellHalf.MyBCsLR[i][1],
+            cellHalf.dx
         );
     }
     else {
         rho_S = fluxLimiter
         (
-            cell.rho[i][j-1],
-            cell.rho[i][j],
-            cell.rho[i][j+1],
-            cell.dx
+            cellHalf.rho[i][j-1],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i][j+1],
+            cellHalf.dx
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i][j-1],
-            cell.Mx[i][j],
-            cell.Mx[i][j+1],
-            cell.dx
+            cellHalf.Mx[i][j-1],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i][j+1],
+            cellHalf.dx
         );
         My_S = fluxLimiter
         (
-            cell.My[i][j-1],
-            cell.My[i][j],
-            cell.My[i][j+1],
-            cell.dx
+            cellHalf.My[i][j-1],
+            cellHalf.My[i][j],
+            cellHalf.My[i][j+1],
+            cellHalf.dx
         );
     }
-    rho_Plus = soundSpeed*(cell.rho[i][j] + 0.5*cell.dx*(1.0 - courant*rho_S));
-    rho_Minus = soundSpeed*(cell.rho[i][j] - 0.5*cell.dx*(1.0 - courant*rho_S));
-    Mx_Plus = soundSpeed*(cell.Mx[i][j] + 0.5*cell.dx*(1.0 - courant*Mx_S));
-    Mx_Minus = soundSpeed*(cell.Mx[i][j] - 0.5*cell.dx*(1.0 - courant*Mx_S));
-    My_Plus = soundSpeed*(cell.My[i][j] + 0.5*cell.dx*(1.0 - courant*My_S));
-    My_Minus = soundSpeed*(cell.My[i][j] - 0.5*cell.dx*(1.0 - courant*My_S));
+    cellHalf.rhoF_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+    cellHalf.rhoF_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+    cellHalf.MxF_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+    cellHalf.MxF_Minus[i][j] = soundSpeed*(cellHalf.Mx[i][j] - 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+    cellHalf.MyF_Plus[i][j] = soundSpeed*(cellHalf.My[i][j] + 0.5*cellHalf.dx*(1.0 - courant*My_S));
+    cellHalf.MyF_Minus[i][j] = soundSpeed*(cellHalf.My[i][j] - 0.5*cellHalf.dx*(1.0 - courant*My_S));
+    // Boundary condition left/right values
+    if (j == 0) {
+        rho_S = fluxLimiter
+        (
+            cellHalf.rhoBCsLR[i][2],
+            cellHalf.rhoBCsLR[i][0],
+            cellHalf.rho[i][j],
+            cellHalf.dx
+        );
+        Mx_S = fluxLimiter
+        (
+            cellHalf.MxBCsLR[i][2],
+            cellHalf.MxBCsLR[i][0],
+            cellHalf.Mx[i][j],
+            cellHalf.dx
+        );
+        My_S = fluxLimiter
+        (
+            cellHalf.MyBCsLR[i][2],
+            cellHalf.MyBCsLR[i][0],
+            cellHalf.My[i][j],
+            cellHalf.dx
+        );
+        cellHalf.rhoBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.rhoBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+        cellHalf.MxBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.MxBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+        cellHalf.MyBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.MyBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*My_S));
+    }
+    else if (j+1 == cellHalf.xPoints) {
+        rho_S = fluxLimiter
+        (
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsLR[i][1],
+            cellHalf.rhoBCsLR[i][3],
+            cellHalf.dx
+        );
+        Mx_S = fluxLimiter
+        (
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsLR[i][1],
+            cellHalf.MxBCsLR[i][3],
+            cellHalf.dx
+        );
+        My_S = fluxLimiter
+        (
+            cellHalf.My[i][j],
+            cellHalf.MyBCsLR[i][1],
+            cellHalf.MyBCsLR[i][3],
+            cellHalf.dx
+        );
+        cellHalf.rhoBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.rhoBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
+        cellHalf.MxBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.MxBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
+        cellHalf.MyBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.MyBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*My_S));
+    }
 
-    cell.rhoF_Plus[i][j] = Mx_Plus;
-    cell.rhoF_Minus[i][j] = Mx_Minus;
-    cell.MxF_Plus[i][j] = pow(Mx_Plus,2.0)/rho_Plus + 
-        pow(soundSpeed, 2.0)*rho_Plus;
-    cell.MxF_Minus[i][j] = pow(Mx_Minus,2.0)/rho_Minus + 
-        pow(soundSpeed, 2.0)*rho_Minus;
-    cell.MyF_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
-    cell.MyF_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
-
-
-    // G* - Reconstruction and Fluxes using Roe Solver
+    // Reconstuction for bottom/top values into G half time to use in Roe Solver
     if (i == 0) {
         rho_S = fluxLimiter
         (
-            cell.rhoBCsBT[0][j],
-            cell.rho[i][j],
-            cell.rho[i+1][j],
-            cell.dy
+            cellHalf.rhoBCsBT[0][j],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i+1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.MxBCsBT[0][j],
-            cell.Mx[i][j],
-            cell.Mx[i+1][j],
-            cell.dy
+            cellHalf.MxBCsBT[0][j],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i+1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.MyBCsBT[0][j],
-            cell.My[i][j],
-            cell.My[i+1][j],
-            cell.dy
+            cellHalf.MyBCsBT[0][j],
+            cellHalf.My[i][j],
+            cellHalf.My[i+1][j],
+            cellHalf.dy
         );
     }
-    else if (i+1 == cell.yPoints) {
+    else if (i+1 == cellHalf.yPoints) {
         rho_S = fluxLimiter
         (
-            cell.rho[i-1][j],
-            cell.rho[i][j],
-            cell.rhoBCsBT[1][j],
-            cell.dy
+            cellHalf.rho[i-1][j],
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsBT[1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i-1][j],
-            cell.Mx[i][j],
-            cell.MxBCsBT[1][j],
-            cell.dy
+            cellHalf.Mx[i-1][j],
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsBT[1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.My[i-1][j],
-            cell.My[i][j],
-            cell.MyBCsBT[1][j],
-            cell.dy
+            cellHalf.My[i-1][j],
+            cellHalf.My[i][j],
+            cellHalf.MyBCsBT[1][j],
+            cellHalf.dy
         );
     }
     else {
         rho_S = fluxLimiter
         (
-            cell.rho[i-1][j],
-            cell.rho[i][j],
-            cell.rho[i+1][j],
-            cell.dy
+            cellHalf.rho[i-1][j],
+            cellHalf.rho[i][j],
+            cellHalf.rho[i+1][j],
+            cellHalf.dy
         );
         Mx_S = fluxLimiter
         (
-            cell.Mx[i-1][j],
-            cell.Mx[i][j],
-            cell.Mx[i+1][j],
-            cell.dy
+            cellHalf.Mx[i-1][j],
+            cellHalf.Mx[i][j],
+            cellHalf.Mx[i+1][j],
+            cellHalf.dy
         );
         My_S = fluxLimiter
         (
-            cell.My[i-1][j],
-            cell.My[i][j],
-            cell.My[i+1][j],
-            cell.dy
+            cellHalf.My[i-1][j],
+            cellHalf.My[i][j],
+            cellHalf.My[i+1][j],
+            cellHalf.dy
         );
     }
-    rho_Plus = soundSpeed*(cell.rho[i][j] + 0.5*cell.dx*(1.0 - courant*rho_S));
-    rho_Minus = soundSpeed*(cell.rho[i][j] - 0.5*cell.dx*(1.0 - courant*rho_S));
-    Mx_Plus = soundSpeed*(cell.Mx[i][j] + 0.5*cell.dx*(1.0 - courant*Mx_S));
-    Mx_Minus = soundSpeed*(cell.Mx[i][j] - 0.5*cell.dx*(1.0 - courant*Mx_S));
-    My_Plus = soundSpeed*(cell.My[i][j] + 0.5*cell.dx*(1.0 - courant*My_S));
-    My_Minus = soundSpeed*(cell.My[i][j] - 0.5*cell.dx*(1.0 - courant*My_S));
-
-    cell.rhoG_Plus[i][j] = My_Plus;
-    cell.rhoG_Minus[i][j] = My_Minus;
-    cell.MxG_Plus[i][j] = Mx_Plus*My_Plus/rho_Plus;
-    cell.MxG_Minus[i][j] = Mx_Minus*My_Minus/rho_Minus;
-    cell.MyG_Plus[i][j] = pow(My_Plus,2.0)/rho_Plus + 
-        pow(soundSpeed, 2.0)*rho_Plus;
-    cell.MyG_Minus[i][j] = pow(My_Minus,2.0)/rho_Minus + 
-        pow(soundSpeed, 2.0)*rho_Minus;
+    cellHalf.rhoG_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+    cellHalf.rhoG_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+    cellHalf.MxG_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+    cellHalf.MxG_Minus[i][j] = soundSpeed*(cellHalf.Mx[i][j] - 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+    cellHalf.MyG_Plus[i][j] = soundSpeed*(cellHalf.My[i][j] + 0.5*cellHalf.dy*(1.0 - courant*My_S));
+    cellHalf.MyG_Minus[i][j] = soundSpeed*(cellHalf.My[i][j] - 0.5*cellHalf.dy*(1.0 - courant*My_S));
+    // Boundary condition left/right values
+    if (i == 0) {
+        rho_S = fluxLimiter
+        (
+            cellHalf.rhoBCsBT[2][j],
+            cellHalf.rhoBCsBT[0][j],
+            cellHalf.rho[i][j],
+            cellHalf.dy
+        );
+        Mx_S = fluxLimiter
+        (
+            cellHalf.MxBCsBT[2][j],
+            cellHalf.MxBCsBT[0][j],
+            cellHalf.Mx[i][j],
+            cellHalf.dy
+        );
+        My_S = fluxLimiter
+        (
+            cellHalf.MyBCsBT[2][j],
+            cellHalf.MyBCsBT[0][j],
+            cellHalf.My[i][j],
+            cellHalf.dy
+        );
+        cellHalf.rhoBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.rhoBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+        cellHalf.MxBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.MxBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+        cellHalf.MyBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.MyBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*My_S));
+    }
+    else if (i+1 == cellHalf.yPoints) {
+        rho_S = fluxLimiter
+        (
+            cellHalf.rho[i][j],
+            cellHalf.rhoBCsBT[1][j],
+            cellHalf.rhoBCsBT[3][j],
+            cellHalf.dy
+        );
+        Mx_S = fluxLimiter
+        (
+            cellHalf.Mx[i][j],
+            cellHalf.MxBCsBT[1][j],
+            cellHalf.MxBCsBT[3][j],
+            cellHalf.dy
+        );
+        My_S = fluxLimiter
+        (
+            cellHalf.My[i][j],
+            cellHalf.MyBCsBT[1][j],
+            cellHalf.MyBCsBT[3][j],
+            cellHalf.dy
+        );
+        cellHalf.rhoBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.rhoBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
+        cellHalf.MxBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.MxBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
+        cellHalf.MyBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.MyBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*My_S));
+    }
 }
+
+    // // Roe Solver x-dir
+    // uAveRoe = (Mx_Plus/sqrt(rho_Plus) + Mx_Minus/sqrt(rho_Minus))/(sqrt(rho_Plus) + sqrt(rho_Minus));
+    // vAveRoe = (My_Plus/sqrt(rho_Plus) + My_Minus/sqrt(rho_Minus))/(sqrt(rho_Plus) + sqrt(rho_Minus));
+    // lambda_1 = abs(uAveRoe);
+    // lambda_2 = abs(uAveRoe + soundSpeed);
+    // lambda_3 = abs(uAveRoe - soundSpeed);
+    // alpha_1 = vAveRoe*(rho_Plus - rho_Minus)
+    
