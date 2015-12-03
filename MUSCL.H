@@ -1,10 +1,8 @@
-// Update BCs for tunnel
-
 // MUSCL Half Time
-grid tunnel_halfTime = tunnel;
+tunnel_halfTime = tunnel;
 for (i=0; i < tunnel.yPoints; ++i) {
     for (j=0; j < tunnel.xPoints; ++j) {
-        reconstructFlux(i,j,tunnel_halfTime,courant,soundSpeed);
+        reconstructFlux(i,j,tunnel_halfTime,soundSpeed);
         tunnel_halfTime.rho[i][j] = tunnel_halfTime.rho[i][j] - 0.5*tunnel_halfTime.dt*
         (
             (tunnel_halfTime.rhoF_Plus[i][j] - tunnel_halfTime.rhoF_Minus[i][j])/tunnel_halfTime.dx +
@@ -22,13 +20,12 @@ for (i=0; i < tunnel.yPoints; ++i) {
         );
     }
 }
-
-// Update BCs for tunnel_halfTime
+updateBCs(tunnel_halfTime);
 
 // MUSCL Full Time
 for (i=0; i < tunnel.yPoints; ++i) {
     for (j=0; j < tunnel.xPoints; ++j) {
-        reconstructFlux(i,j,tunnel_halfTime,tunnel,courant,soundSpeed);   
+        reconstructFlux(i,j,tunnel_halfTime,tunnel,soundSpeed);   
     }
 }
 for (i=0; i <= tunnel.yPoints; ++i) {
@@ -108,3 +105,4 @@ for (i=0; i < tunnel.yPoints; ++i) {
         }
     }
 }    
+updateBCs(tunnel);

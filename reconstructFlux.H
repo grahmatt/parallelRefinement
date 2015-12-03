@@ -3,12 +3,11 @@ void reconstructFlux
     int i,
     int j,
     grid& cellHalf,
-    double courant,
     double soundSpeed
 ) 
 {
     double rho_S, Mx_S, My_S, rho_Plus, rho_Minus, Mx_Plus, Mx_Minus, My_Plus, 
-        My_Minus;
+        My_Minus, courant;
     
     // F - Reconstuction and Fluxes
     if (j == 0) {
@@ -80,6 +79,7 @@ void reconstructFlux
             cellHalf.dx
         );
     }
+    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dx;  // Should this be sounds speed or u, v, or magnitude?? tunnel.dt/2
     rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
@@ -167,6 +167,7 @@ void reconstructFlux
             cellHalf.dy
         );
     }
+    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dy;
     rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
@@ -190,12 +191,11 @@ void reconstructFlux
     int j,
     grid& cellHalf,
     grid& cellFull,
-    double courant,
     double soundSpeed
 ) 
 {
     double rho_S, Mx_S, My_S, rho_Plus, rho_Minus, Mx_Plus, Mx_Minus, My_Plus, 
-        My_Minus;
+        My_Minus, courant;
     
     // Reconstuction for left/right values into F half time to use in Roe Solver
     if (j == 0) {
@@ -267,6 +267,7 @@ void reconstructFlux
             cellHalf.dx
         );
     }
+    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dx;
     cellHalf.rhoF_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     cellHalf.rhoF_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     cellHalf.MxF_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
@@ -397,6 +398,7 @@ void reconstructFlux
             cellHalf.dy
         );
     }
+    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dy;
     cellHalf.rhoG_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     cellHalf.rhoG_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     cellHalf.MxG_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
