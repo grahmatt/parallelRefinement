@@ -43,6 +43,16 @@ struct grid {
     int yPoints;
 };
 
+void printGrid(grid& cells){
+    cout.precision(4);
+    for(int i=cells.yPoints-1; i >= 0; i--){
+        for(int j=0; j < cells.xPoints; j++){
+            cout << cells.rho[i][j] << "  ";
+        }
+    cout << "\n";
+    }
+}
+
 #include "fluxLimiter.H"
 #include "reconstructFlux.H"
 #include "roeSolver.H"
@@ -59,7 +69,9 @@ int main(int argc, char** argv){
     //     n = atoi(argv[1]);
     // }
 
+    
     // Gnuplot g1("lines");
+    // g1.savetops("test_output");
     // cout << "*** plotting slopes" << endl;
     // g1.set_title("Slopes\\nNew Line");
     // cout << "y = x" << endl;
@@ -70,9 +82,41 @@ int main(int argc, char** argv){
     // g1.plot_slope(-1.0,0.0,"y=-x");
     // g1.unset_title();
 
+    #include "timeControls.H"
     #include "createGrid.H"
 
-    #include "MUSCL.H"
+    while (currentTime <= endTime) {
+
+        // cout << "Printing Tunnel\n";
+        // printGrid(tunnel);
+
+        currentTime += dt;
+        cout << "t = " << currentTime << "\n";
+
+        #include "MUSCL.H"
+
+        // cin.get();
+    }
+    
+    // ofstream myfile;
+    // myfile.precision(15);
+    // myfile.open ("output.txt");
+    // myfile << "n = " << n << endl;
+    // myfile << "Abs Sum = " << fixed << globalSum << endl;
+    // myfile << "Minimum = " << fixed << globalMin << endl;
+    // myfile << "wallTime = " << fixed << wallTime << endl;
+    // myfile.close();
+    // cout.precision(3);
+    // cout << "n = " << n << endl;
+    // cout << "globalMin = " << fixed << globalMin << endl;
+    // cout << "globalAbsSum = " << fixed << globalSum << endl;
+    // cout << "wallTime = " << fixed << wallTime << endl;
+
+    cout << "Printing Tunnel\n";
+    printGrid(tunnel);
+
+    cout.precision(10);
+    cout << "Shock density: " << rhoShock << "\nDensity: " << tunnel.rho[0][0] << "\n";
 
 }
 

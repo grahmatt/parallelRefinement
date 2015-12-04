@@ -194,8 +194,7 @@ void reconstructFlux
     double soundSpeed
 ) 
 {
-    double rho_S, Mx_S, My_S, rho_Plus, rho_Minus, Mx_Plus, Mx_Minus, My_Plus, 
-        My_Minus, courant;
+    double rho_S, Mx_S, My_S, courant;
     
     // Reconstuction for left/right values into F half time to use in Roe Solver
     if (j == 0) {
