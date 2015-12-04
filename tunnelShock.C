@@ -47,6 +47,7 @@ struct grid {
 #include "reconstructFlux.H"
 #include "roeSolver.H"
 #include "updateBCs.H"
+// #include "gnuplot_i.hpp" //Gnuplot class handles POSIX-Pipe-communikation with Gnuplot
 
 int main(int argc, char** argv){
 
@@ -57,6 +58,17 @@ int main(int argc, char** argv){
     // else {
     //     n = atoi(argv[1]);
     // }
+
+    // Gnuplot g1("lines");
+    // cout << "*** plotting slopes" << endl;
+    // g1.set_title("Slopes\\nNew Line");
+    // cout << "y = x" << endl;
+    // g1.plot_slope(1.0,0.0,"y=x");
+    // cout << "y = 2*x" << endl;
+    // g1.plot_slope(2.0,0.0,"y=2x");
+    // cout << "y = -x" << endl;
+    // g1.plot_slope(-1.0,0.0,"y=-x");
+    // g1.unset_title();
 
     #include "createGrid.H"
 
