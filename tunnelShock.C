@@ -57,10 +57,8 @@ void printGrid(grid& cells){
 #include "reconstructFlux.H"
 #include "roeSolver.H"
 #include "updateBCs.H"
-// #include "gnuplot_i.hpp" //Gnuplot class handles POSIX-Pipe-communikation with Gnuplot
 
 int main(int argc, char** argv){
-
     // if (argc < 2){
     //     cout << "Missing matrix size: \"mpirun -np <#> hw3.bin <matrix size>\"" << endl;
     //     return 0;
@@ -69,30 +67,13 @@ int main(int argc, char** argv){
     //     n = atoi(argv[1]);
     // }
 
-    
-    // Gnuplot g1("lines");
-    // g1.savetops("test_output");
-    // cout << "*** plotting slopes" << endl;
-    // g1.set_title("Slopes\\nNew Line");
-    // cout << "y = x" << endl;
-    // g1.plot_slope(1.0,0.0,"y=x");
-    // cout << "y = 2*x" << endl;
-    // g1.plot_slope(2.0,0.0,"y=2x");
-    // cout << "y = -x" << endl;
-    // g1.plot_slope(-1.0,0.0,"y=-x");
-    // g1.unset_title();
-
     #include "timeControls.H"
     #include "createGrid.H"
 
-    cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) <<
-        "\n Enter to continue...\n";
+    cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
     cin.get();
 
-    while (currentTime <= endTime) {
-
-        // cout << "Printing Tunnel\n";
-        // printGrid(tunnel);
+    while (currentTime < endTime) {
 
         currentTime += dt;
         cout << "t = " << currentTime << "\n";
@@ -128,13 +109,6 @@ int main(int argc, char** argv){
     rhoFile.close();
     xFile.close();
     yFile.close();
-
-    // cout << "Printing Tunnel\n";
-    // printGrid(tunnel);
-
-    // cout.precision(10);
-    // cout << "Shock density: " << rhoShock << "\nDensity: " << tunnel.rho[0][0] << "\n";
-
 }
 
 

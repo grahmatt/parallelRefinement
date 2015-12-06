@@ -7,15 +7,11 @@ void updateBCs
     for (i=0; i < 4; ++i) {
         if (!cells.connect[i]) {
             if (i == 0) { // Left
-                // for (n=0; n < cells.yPoints; ++n) {
-                //     cells.rhoBCsLR[n][0] = rhoShock;
-                //     cells.MxBCsLR[n][0] = 0.0;                // Should this be set to (rhoShock*cells.dx*cells.dy*soundSpeed)??
-                //     cells.MyBCsLR[n][0] = 0.0;
-                //     // For Roe Solver
-                //     cells.rhoBCsLR[n][2] = rhoShock;
-                //     cells.MxBCsLR[n][2] = 0.0;                // Should this be set to (rhoShock*cells.dx*cells.dy*soundSpeed)??
-                //     cells.MyBCsLR[n][2] = 0.0;
-                // }
+                for (n=0; n < cells.yPoints; ++n) {
+                    cells.MxBCsLR[n][0] = cells.Mx[n][0];
+                    // For Roe Solver
+                    cells.MxBCsLR[n][2] = cells.Mx[n][0];
+                }
             }
             else if (i == 1) { // Right
                 for (n=0; n < cells.yPoints; ++n) {

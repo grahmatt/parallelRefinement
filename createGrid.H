@@ -1,4 +1,3 @@
-// double courant = 0.5*soundSpeed*tunnel.dt/tunnel.dx;  // Should this be sounds speed or u, v, or magnitude?? tunnel.dt/2
 int i, j, n;
 double pressAtm, mach, shockSpeed, rhoShock, rhoStart, soundSpeed;
 grid tunnel, tunnel_halfTime;
@@ -7,11 +6,12 @@ mach = 1.1;
 pressAtm = 1.0;
 soundSpeed = 1.0;
 rhoStart = pressAtm;
-rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*pow((1.0 - 1.0/(7.0*pow(mach,2.0))),2.5)) - 1.0);
+rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*
+    pow((1.0 - 1.0/(7.0*pow(mach,2.0))),2.5)) - 1.0);
 shockSpeed = soundSpeed*mach;
 
 tunnel.dt = dt;
-tunnel.dx = 0.005;
+tunnel.dx = 0.05;
 tunnel.dy = 0.05;
 tunnel.xPoints = 500;
 tunnel.yPoints = 100; 
@@ -23,20 +23,20 @@ for (i=0; i < 4; ++i) {
     if (i == 0) { // Left
         tunnel.connect[i] = false;
         tunnel.bounds[i] = "value";
-        tunnel.rhoBCsLR.resize(tunnel.yPoints, vector<double>(4,0)); //[tunnel.yPoints][4];
-        tunnel.MxBCsLR.resize(tunnel.yPoints, vector<double>(4,0)); //[tunnel.yPoints][4];
-        tunnel.MyBCsLR.resize(tunnel.yPoints, vector<double>(4,0)); //[tunnel.yPoints][4];
+        tunnel.rhoBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
+        tunnel.MxBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
+        tunnel.MyBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
         // For Roe Solver
-        tunnel.rhoBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0)); //[tunnel.yPoints][2];
-        tunnel.MxBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0)); //[tunnel.yPoints][2];
-        tunnel.MyBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0)); //[tunnel.yPoints][2];
+        tunnel.rhoBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0));
+        tunnel.MxBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0));
+        tunnel.MyBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0));
         for (n=0; n < tunnel.yPoints; ++n) {
             tunnel.rhoBCsLR[n][0] = rhoShock;
-            tunnel.MxBCsLR[n][0] = rhoShock*soundSpeed; //*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
+            tunnel.MxBCsLR[n][0] = 0.0; //rhoShock*pow(soundSpeed,2.0);
             tunnel.MyBCsLR[n][0] = 0.0;
             // For Roe Solver
             tunnel.rhoBCsLR[n][2] = rhoShock;
-            tunnel.MxBCsLR[n][2] = rhoShock*soundSpeed; //*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
+            tunnel.MxBCsLR[n][2] = 0.0; //rhoShock*pow(soundSpeed,2.0);
             tunnel.MyBCsLR[n][2] = 0.0;
         }
     }
@@ -56,13 +56,13 @@ for (i=0; i < 4; ++i) {
     else if (i == 2) { // Bottom
         tunnel.connect[i] = false;
         tunnel.bounds[i] = "wall";
-        tunnel.rhoBCsBT.resize(4, vector<double>(tunnel.xPoints,0)); //[4][tunnel.xPoints];
-        tunnel.MxBCsBT.resize(4, vector<double>(tunnel.xPoints,0)); //[4][tunnel.xPoints];
-        tunnel.MyBCsBT.resize(4, vector<double>(tunnel.xPoints,0)); //[4][tunnel.xPoints];
+        tunnel.rhoBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
+        tunnel.MxBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
+        tunnel.MyBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
         // For Roe Solver
-        tunnel.rhoBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0)); //[2][tunnel.xPoints];
-        tunnel.MxBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0)); //[2][tunnel.xPoints];
-        tunnel.MyBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0)); //[2][tunnel.xPoints];
+        tunnel.rhoBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0));
+        tunnel.MxBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0));
+        tunnel.MyBCsBT_PlusMinus.resize(2, vector<double>(tunnel.xPoints,0));
         for (n=0; n < tunnel.xPoints; ++n) {
             tunnel.rhoBCsBT[0][n] = rhoStart;
             tunnel.MxBCsBT[0][n] = 0.0;
@@ -96,7 +96,7 @@ for (i=0; i < tunnel.yPoints; ++i) {
     }
 }
 // Initialize flux variables
-tunnel.rhoF_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0)); //[tunnel.yPoints][tunnel.xPoints];
+tunnel.rhoF_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.rhoF_Minus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.rhoG_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.rhoG_Minus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
