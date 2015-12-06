@@ -98,25 +98,38 @@ int main(int argc, char** argv){
         // cin.get();
     }
     
-    // ofstream myfile;
-    // myfile.precision(15);
-    // myfile.open ("output.txt");
-    // myfile << "n = " << n << endl;
-    // myfile << "Abs Sum = " << fixed << globalSum << endl;
-    // myfile << "Minimum = " << fixed << globalMin << endl;
-    // myfile << "wallTime = " << fixed << wallTime << endl;
-    // myfile.close();
-    // cout.precision(3);
-    // cout << "n = " << n << endl;
-    // cout << "globalMin = " << fixed << globalMin << endl;
-    // cout << "globalAbsSum = " << fixed << globalSum << endl;
-    // cout << "wallTime = " << fixed << wallTime << endl;
+    ofstream rhoFile;
+    ofstream xFile;
+    ofstream yFile;
+    rhoFile.precision(9);
+    xFile.precision(9);
+    yFile.precision(9);
+    rhoFile.open ("RHO.txt");
+    xFile.open ("X.txt");
+    yFile.open ("Y.txt");
+    xFile << "NumberOfColumns: " << tunnel.xPoints;
+    xFile << " NumberOfRows: " << tunnel.yPoints << "\n";
+    for(int i=0; i < tunnel.yPoints; i++){
+        for(int j=0; j < tunnel.xPoints; j++){
+            rhoFile << tunnel.rho[i][j] << " ";
+            xFile << tunnel.dx*j + 0.5*tunnel.dx << " ";
+            yFile << tunnel.dy*i + 0.5*tunnel.dy << " ";
+        }
+        if (i + 1 < tunnel.yPoints) {
+            rhoFile << "\n";
+            xFile << "\n";
+            yFile << "\n";
+        }
+    }
+    rhoFile.close();
+    xFile.close();
+    yFile.close();
 
-    cout << "Printing Tunnel\n";
-    printGrid(tunnel);
+    // cout << "Printing Tunnel\n";
+    // printGrid(tunnel);
 
-    cout.precision(10);
-    cout << "Shock density: " << rhoShock << "\nDensity: " << tunnel.rho[0][0] << "\n";
+    // cout.precision(10);
+    // cout << "Shock density: " << rhoShock << "\nDensity: " << tunnel.rho[0][0] << "\n";
 
 }
 

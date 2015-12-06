@@ -1,5 +1,5 @@
 double endTime, dt, currentTime;
 
-endTime = 1.0;
+endTime = 2.5;
 dt = 0.001;
 currentTime = 0.0;
