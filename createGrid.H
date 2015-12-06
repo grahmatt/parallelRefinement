@@ -11,10 +11,10 @@ rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*pow((1.0 - 1.
 shockSpeed = soundSpeed*mach;
 
 tunnel.dt = dt;
-tunnel.dx = 0.1;
-tunnel.dy = 0.1;
-tunnel.xPoints = 50;
-tunnel.yPoints = 10; 
+tunnel.dx = 0.005;
+tunnel.dy = 0.05;
+tunnel.xPoints = 500;
+tunnel.yPoints = 100; 
 tunnel.rho.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0)); //[tunnel.yPoints][tunnel.xPoints];
 tunnel.Mx.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.My.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
@@ -32,11 +32,11 @@ for (i=0; i < 4; ++i) {
         tunnel.MyBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0)); //[tunnel.yPoints][2];
         for (n=0; n < tunnel.yPoints; ++n) {
             tunnel.rhoBCsLR[n][0] = rhoShock;
-            tunnel.MxBCsLR[n][0] = rhoShock*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
+            tunnel.MxBCsLR[n][0] = rhoShock*soundSpeed; //*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
             tunnel.MyBCsLR[n][0] = 0.0;
             // For Roe Solver
             tunnel.rhoBCsLR[n][2] = rhoShock;
-            tunnel.MxBCsLR[n][2] = rhoShock*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
+            tunnel.MxBCsLR[n][2] = rhoShock*soundSpeed; //*tunnel.dy*shockSpeed;                // Should this be set to (rhoShock*tunnel.dx*tunnel.dy*soundSpeed)??
             tunnel.MyBCsLR[n][2] = 0.0;
         }
     }

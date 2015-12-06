@@ -79,7 +79,7 @@ void reconstructFlux
             cellHalf.dx
         );
     }
-    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dx;  // Should this be sounds speed or u, v, or magnitude?? tunnel.dt/2
+    courant = 0.5*cellHalf.Mx[i][j]/cellHalf.rho[i][j]*cellHalf.dt/cellHalf.dx;  // Should this be sounds speed or u, v, or magnitude?? tunnel.dt/2
     rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
@@ -167,7 +167,7 @@ void reconstructFlux
             cellHalf.dy
         );
     }
-    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dy;
+    courant = 0.5*cellHalf.My[i][j]/cellHalf.rho[i][j]*cellHalf.dt/cellHalf.dy;
     rho_Plus = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     rho_Minus = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     Mx_Plus = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
@@ -266,7 +266,7 @@ void reconstructFlux
             cellHalf.dx
         );
     }
-    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dx;
+    courant = 0.5*cellHalf.Mx[i][j]/cellHalf.rho[i][j]*cellHalf.dt/cellHalf.dx;
     cellHalf.rhoF_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     cellHalf.rhoF_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
     cellHalf.MxF_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
@@ -296,6 +296,7 @@ void reconstructFlux
             cellHalf.My[i][j],
             cellHalf.dx
         );
+        courant = 0.5*cellHalf.MxBCsLR[i][0]/cellHalf.rhoBCsLR[i][0]*cellHalf.dt/cellHalf.dx;
         cellHalf.rhoBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.rhoBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*rho_S));
         cellHalf.MxBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.MxBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
         cellHalf.MyBCsLR_PlusMinus[i][0] = soundSpeed*(cellHalf.MyBCsLR[i][0] + 0.5*cellHalf.dx*(1.0 - courant*My_S));
@@ -322,6 +323,7 @@ void reconstructFlux
             cellHalf.MyBCsLR[i][3],
             cellHalf.dx
         );
+        courant = 0.5*cellHalf.MxBCsLR[i][1]/cellHalf.rhoBCsLR[i][1]*cellHalf.dt/cellHalf.dx;
         cellHalf.rhoBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.rhoBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*rho_S));
         cellHalf.MxBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.MxBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*Mx_S));
         cellHalf.MyBCsLR_PlusMinus[i][1] = soundSpeed*(cellHalf.MyBCsLR[i][1] - 0.5*cellHalf.dx*(1.0 - courant*My_S));
@@ -397,7 +399,7 @@ void reconstructFlux
             cellHalf.dy
         );
     }
-    courant = 0.5*soundSpeed*cellHalf.dt/cellHalf.dy;
+    courant = 0.5*cellHalf.My[i][j]/cellHalf.rho[i][j]*cellHalf.dt/cellHalf.dy;
     cellHalf.rhoG_Plus[i][j] = soundSpeed*(cellHalf.rho[i][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     cellHalf.rhoG_Minus[i][j] = soundSpeed*(cellHalf.rho[i][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
     cellHalf.MxG_Plus[i][j] = soundSpeed*(cellHalf.Mx[i][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
@@ -427,6 +429,7 @@ void reconstructFlux
             cellHalf.My[i][j],
             cellHalf.dy
         );
+        courant = 0.5*cellHalf.MyBCsBT[0][j]/cellHalf.rhoBCsBT[0][j]*cellHalf.dt/cellHalf.dy;
         cellHalf.rhoBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.rhoBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*rho_S));
         cellHalf.MxBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.MxBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
         cellHalf.MyBCsBT_PlusMinus[0][j] = soundSpeed*(cellHalf.MyBCsBT[0][j] + 0.5*cellHalf.dy*(1.0 - courant*My_S));
@@ -453,6 +456,7 @@ void reconstructFlux
             cellHalf.MyBCsBT[3][j],
             cellHalf.dy
         );
+        courant = 0.5*cellHalf.MyBCsBT[1][j]/cellHalf.rhoBCsBT[1][j]*cellHalf.dt/cellHalf.dy;
         cellHalf.rhoBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.rhoBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*rho_S));
         cellHalf.MxBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.MxBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*Mx_S));
         cellHalf.MyBCsBT_PlusMinus[1][j] = soundSpeed*(cellHalf.MyBCsBT[1][j] - 0.5*cellHalf.dy*(1.0 - courant*My_S));

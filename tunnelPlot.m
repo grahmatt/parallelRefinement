@@ -52,7 +52,7 @@ meshc(X,Y,rho)
 xlabel('X')
 ylabel('Y')
 zlabel('Pressure')
-suptitle(['t = ' num2str(dt*n)])
+% suptitle(['t = ' num2str(dt*n)])
 % print('-depsc',filename)
 
 end

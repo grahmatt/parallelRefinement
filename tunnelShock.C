@@ -85,6 +85,10 @@ int main(int argc, char** argv){
     #include "timeControls.H"
     #include "createGrid.H"
 
+    cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) <<
+        "\n Enter to continue...\n";
+    cin.get();
+
     while (currentTime <= endTime) {
 
         // cout << "Printing Tunnel\n";
