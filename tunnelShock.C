@@ -109,6 +109,8 @@ int main(int argc, char** argv){
     rhoFile.close();
     xFile.close();
     yFile.close();
+
+    return 0;
 }
 
 

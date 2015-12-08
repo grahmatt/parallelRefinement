@@ -11,12 +11,20 @@ refineTunnel.xPoints = 0;
 refineTunnel.yPoints = tunnel.yPoints*refineFactor;
 
 i = 0;
-n = 0;
+n = -1;
 updateRefCol = false;
 for (j=0; j < tunnel.xPoints; ++j) {
     if (tunnel.rho[i][j] < 0.99*rhoShock && tunnel.rho[i][j] > 1.01*rhoStart) {
-        if (!updateRefCol && oldRefCol[n] != j) {
-            updateRefCol = true;
+        if (!updateRefCol) {
+            if (n + 1 == oldRefCol.size()) {
+                updateRefCol = true;
+            }
+            else {
+                ++n;
+                if (oldRefCol[n] != j) {
+                    updateRefCol = true;
+                }
+            }
         }
         if (refinement.size() == 0 && j > 0) {
             refinement.push_back (j - 1);
@@ -24,12 +32,15 @@ for (j=0; j < tunnel.xPoints; ++j) {
         refineColumns.push_back (j);
         if (refineColumns.size() > 1 && refineColumns.back() - 1 != refineColumns[refineColumns.end - 2]) {
             cout << "Error: Only one refinement zone available\n";
+            return 0;
         }
-        ++ n;
     }
 }
 if (refineColumns.back() != tunnel.xPoints - 1) {
     refineColumns.push_back (refineColumns.back() + 1);
+}
+if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
+    updateRefCol = true;
 }
 
 if updateRefCol {
@@ -59,6 +70,7 @@ if updateRefCol {
     refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 
     for (j=0; j < refineColumns.size(); ++j) {
+        if ()
         for (n=0; n < refineFactor; ++n) {
             for (i=0; i < refineTunnel.yPoints, ++i) {
                 kdjflkdajf;
