@@ -57,6 +57,7 @@ void printGrid(grid& cells){
 #include "reconstructFlux.H"
 #include "roeSolver.H"
 #include "updateBCs.H"
+#include "MUSCL.H"
 
 int main(int argc, char** argv){
     // if (argc < 2){
@@ -78,7 +79,7 @@ int main(int argc, char** argv){
         currentTime += dt;
         cout << "t = " << currentTime << "\n";
 
-        #include "MUSCL.H"
+        MUSCL(tunnel,soundSpeed); 
 
         // cin.get();
     }
