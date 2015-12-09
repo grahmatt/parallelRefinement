@@ -130,8 +130,6 @@ void MUSCL
     // MUSCL Half Time
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
-            // cout << "HERE 1: i = " << i << " j = " << j << "\n";
-            // cout << refineCells.xPoints << " " << refineCells.yPoints << "\n";
             reconstructFlux(i,j,refineCells_halfTime,soundSpeed);
             refineCells_halfTime.rho[i][j] = refineCells_halfTime.rho[i][j] - 0.5*refineCells_halfTime.dt*
             (

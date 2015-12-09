@@ -76,11 +76,18 @@ int main(int argc, char** argv) {
     cin.get();
 
     while (currentTime < endTime) {
-
-        if (currentTime != 0.0) {
-            cout << "HERE!!!!\n";
-            updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
-        }
+   
+        // grid refineTunnel;
+        // if (currentTime == 0.0) {
+        //     refineTunnel = refineTunnelStart;
+        // }
+        // else {
+        // grid refineTunnel_oldTime;
+        // refineTunnel_oldTime = refineTunnel;
+        // // refineTunnel.~grid();
+        // refineTunnel = updateAMR(refineTunnel_oldTime,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
+        // }
+        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
 
         currentTime += dt;
         cout << "t = " << currentTime << "\n";
@@ -90,8 +97,6 @@ int main(int argc, char** argv) {
         if (refineColumns.size() > 0) {
             #include "AMR.H"
         }
-
-        cout << "HERE 3\n";
 
         // cin.get();
     }

@@ -18,8 +18,8 @@ void updateAMR
     oldRefCol = refineColumns;
     refineColumns.resize(0);
     for (j=0; j < coarseCells.xPoints; ++j) {
-        if (coarseCells.rho[i][j] < 0.99*rhoShock && 
-            coarseCells.rho[i][j] > 1.01*rhoStart) {
+        if (coarseCells.rho[i][j] < 0.95*rhoShock && 
+            coarseCells.rho[i][j] > 1.05*rhoStart) {
             if (!updateRefCol) {
                 if (n + 1 == oldRefCol.size()) {
                     updateRefCol = true;
@@ -48,7 +48,12 @@ void updateAMR
         }
     }
     if (refineColumns.back() != coarseCells.xPoints - 1) {
-        refineColumns.push_back (refineColumns.back() + 1);
+        if (refineColumns.empty()) {
+            refineColumns.push_back(0);
+        }
+        else {
+            refineColumns.push_back (refineColumns.back() + 1);
+        }
         if (refineColumns.back() == coarseCells.xPoints - 1) {
             refineCells.connect[1] = coarseCells.connect[1];
         }
@@ -62,7 +67,7 @@ void updateAMR
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
     }
-    if (updateRefCol) {
+    if (updateRefCol || refineColumns.size() != refineCells.xPoints/refineFactor) {
         grid refineCells_oldTime = refineCells;
 
         refineCells.xPoints = refineColumns.size()*refineFactor;
