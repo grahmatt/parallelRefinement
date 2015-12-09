@@ -57,9 +57,10 @@ void printGrid(grid& cells){
 #include "reconstructFlux.H"
 #include "roeSolver.H"
 #include "updateBCs.H"
+#include "updateAMR.H"
 #include "MUSCL.H"
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
     // if (argc < 2){
     //     cout << "Missing matrix size: \"mpirun -np <#> hw3.bin <matrix size>\"" << endl;
     //     return 0;
@@ -76,10 +77,21 @@ int main(int argc, char** argv){
 
     while (currentTime < endTime) {
 
+        if (currentTime != 0.0) {
+            cout << "HERE!!!!\n";
+            updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
+        }
+
         currentTime += dt;
         cout << "t = " << currentTime << "\n";
 
         MUSCL(tunnel,soundSpeed); 
+
+        if (refineColumns.size() > 0) {
+            #include "AMR.H"
+        }
+
+        cout << "HERE 3\n";
 
         // cin.get();
     }
@@ -95,8 +107,8 @@ int main(int argc, char** argv){
     yFile.open ("Y.txt");
     xFile << "NumberOfColumns: " << tunnel.xPoints;
     xFile << " NumberOfRows: " << tunnel.yPoints << "\n";
-    for(int i=0; i < tunnel.yPoints; i++){
-        for(int j=0; j < tunnel.xPoints; j++){
+    for(int i=0; i < tunnel.yPoints; i++) {
+        for(int j=0; j < tunnel.xPoints; j++) {
             rhoFile << tunnel.rho[i][j] << " ";
             xFile << tunnel.dx*j + 0.5*tunnel.dx << " ";
             yFile << tunnel.dy*i + 0.5*tunnel.dy << " ";
@@ -113,11 +125,5 @@ int main(int argc, char** argv){
 
     return 0;
 }
-
-
-
-
-
-
 
 
