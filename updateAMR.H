@@ -19,7 +19,7 @@ void updateAMR
     refineColumns.resize(0);
     for (j=0; j < coarseCells.xPoints; ++j) {
         if (coarseCells.rho[i][j] < 0.95*rhoShock && 
-            coarseCells.rho[i][j] > 1.05*rhoStart) {
+            coarseCells.rho[i][j] > 1.01*rhoStart) {
             if (!updateRefCol) {
                 if (n + 1 == oldRefCol.size()) {
                     updateRefCol = true;
@@ -31,39 +31,56 @@ void updateAMR
                     }
                 }
             }
-            if (refineColumns.size() == 0 && j > 0) {
-                refineColumns.push_back (j - 1);
-                if (j - 1 == 0) {
-                    refineCells.connect[0] = coarseCells.connect[0];
-                }
-                else {
-                    refineCells.connect[0] = true;
-                }
+            if (refineColumns.size() == 0) {
+                for (int a=0; a < 6; a++) {
+                    if (j - a > 0) {
+                        refineColumns.push_back (j - 1);
+                        if (j - 1 == 0) {
+                            refineCells.connect[0] = coarseCells.connect[0];
+                        }
+                        else {
+                            refineCells.connect[0] = true;
+                        }
+                    }
+                    else {
+                        break;
+                    }
+                }     
             }
             refineColumns.push_back (j);
             if (refineColumns.size() > 1 && 
                 refineColumns.back() - 1 != refineColumns[refineColumns.size() - 2]) {
                 cout << "Error: Only one refinement zone available\n";
+                refineColumns.clear(); 
+                for (int a=refineColumns[0]; a < j+1; a++) {
+                    refineColumns.push_back(a);
+                }
+                for (int a=0; a < refineColumns.size(); a++) {
+                    cout << refineColumns[a] << " ";
+                }
+                cout << "\n";
+                // cin.get();
             }
         }
     }
-    if (refineColumns.back() != coarseCells.xPoints - 1) {
-        if (refineColumns.empty()) {
-            refineColumns.push_back(0);
-        }
-        else {
+    if (refineColumns.empty()) {
+        refineColumns.push_back(0);
+    }
+    for(int a=0; a < 6; a++) {
+        if (refineColumns.back() != coarseCells.xPoints - 1) {
             refineColumns.push_back (refineColumns.back() + 1);
         }
-        if (refineColumns.back() == coarseCells.xPoints - 1) {
-            refineCells.connect[1] = coarseCells.connect[1];
-        }
         else {
-            refineCells.connect[1] = true;
+            break;
         }
+    }
+    if (refineColumns.back() == coarseCells.xPoints - 1) {
+        refineCells.connect[1] = coarseCells.connect[1];
     }
     else {
         refineCells.connect[1] = true;
     }
+    
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
     }

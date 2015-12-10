@@ -43,45 +43,7 @@ struct grid {
     int yPoints;
 };
 
-void printGrid(grid& cells){
-    cout.precision(4);
-    for(int i=cells.yPoints-1; i >= 0; i--){
-        for(int j=0; j < cells.xPoints; j++){
-            cout << cells.rho[i][j] << "  ";
-        }
-    cout << "\n";
-    }
-}
-
-void printGridFiles(grid& cells) {
-    ofstream rhoFile;
-    ofstream xFile;
-    ofstream yFile;
-    rhoFile.precision(9);
-    xFile.precision(9);
-    yFile.precision(9);
-    rhoFile.open ("RHO.txt");
-    xFile.open ("X.txt");
-    yFile.open ("Y.txt");
-    xFile << "NumberOfColumns: " << cells.xPoints;
-    xFile << " NumberOfRows: " << cells.yPoints << "\n";
-    for(int i=0; i < cells.yPoints; i++) {
-        for(int j=0; j < cells.xPoints; j++) {
-            rhoFile << cells.rho[i][j] << " ";
-            xFile << cells.dx*j + 0.5*cells.dx << " ";
-            yFile << cells.dy*i + 0.5*cells.dy << " ";
-        }
-        if (i + 1 < cells.yPoints) {
-            rhoFile << "\n";
-            xFile << "\n";
-            yFile << "\n";
-        }
-    }
-    rhoFile.close();
-    xFile.close();
-    yFile.close();
-}
-
+#include "printData.H"
 #include "fluxLimiter.H"
 #include "reconstructFlux.H"
 #include "roeSolver.H"
@@ -117,11 +79,13 @@ int main(int argc, char** argv) {
             #include "AMR.H"
         }
 
-        printGridFiles(tunnel);
-        // cin.get();
+        // printGridFiles(tunnel);
+        printGridFiles(tunnel,refineTunnel,refineColumns);
+        cin.get();
     }
     
-    printGridFiles(tunnel);
+    // printGridFiles(tunnel);
+    printGridFiles(tunnel,refineTunnel,refineColumns);
 
     return 0;
 }

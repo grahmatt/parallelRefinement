@@ -66,9 +66,11 @@ void updateBCs
                     for (k=0; k < refineFactor; ++k) {
                         cells.rhoBCsLR[i*refineFactor + k][0] = coarseCells.rhoBCsLR[i][0];
                         cells.MxBCsLR[i*refineFactor + k][0] = cells.Mx[i*refineFactor + k][0];
+                        cells.MyBCsLR[i*refineFactor + k][0] = 0.0;
                         // For Roe Solver
                         cells.rhoBCsLR[i*refineFactor + k][2] = coarseCells.rhoBCsLR[i][2];
                         cells.MxBCsLR[i*refineFactor + k][2] = cells.Mx[i*refineFactor + k][0];
+                        cells.MyBCsLR[i*refineFactor + k][2] = 0.0;
                     }
                 }
             }
