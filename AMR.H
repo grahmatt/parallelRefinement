@@ -43,14 +43,14 @@ for (n=0; n < refineFactor; ++n) {
 // Coarse border cell flux updates
 for (i=0; i < tunnel.yPoints; ++i) {
     if (refineColumns[0] != 0) {
-        tunnel.rho[i][refineColumns[0] - 1] -= tunnel.dt/tunnel.dx*rhoFixFPlus[i];
-        tunnel.Mx[i][refineColumns[0] - 1] -= tunnel.dt/tunnel.dx*MxFixFPlus[i];
-        tunnel.My[i][refineColumns[0] - 1] -= tunnel.dt/tunnel.dx*MyFixFPlus[i];
+        tunnel.rho[i][refineColumns[0] - 1] += tunnel.dt/tunnel.dx*rhoFixFPlus[i];
+        tunnel.Mx[i][refineColumns[0] - 1] += tunnel.dt/tunnel.dx*MxFixFPlus[i];
+        tunnel.My[i][refineColumns[0] - 1] += tunnel.dt/tunnel.dx*MyFixFPlus[i];
     }
     if (refineColumns.back() != tunnel.xPoints - 1) {
-        tunnel.rho[i][refineColumns.back() + 1] += tunnel.dt/tunnel.dx*rhoFixFMinus[i];
-        tunnel.Mx[i][refineColumns.back() + 1] += tunnel.dt/tunnel.dx*MxFixFMinus[i];
-        tunnel.My[i][refineColumns.back() + 1] += tunnel.dt/tunnel.dx*MyFixFMinus[i];
+        tunnel.rho[i][refineColumns.back() + 1] -= tunnel.dt/tunnel.dx*rhoFixFMinus[i];
+        tunnel.Mx[i][refineColumns.back() + 1] -= tunnel.dt/tunnel.dx*MxFixFMinus[i];
+        tunnel.My[i][refineColumns.back() + 1] -= tunnel.dt/tunnel.dx*MyFixFMinus[i];
     }
 }
 // Coarse inner cell center updates

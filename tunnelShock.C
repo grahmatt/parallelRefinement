@@ -53,6 +53,35 @@ void printGrid(grid& cells){
     }
 }
 
+void printGridFiles(grid& cells) {
+    ofstream rhoFile;
+    ofstream xFile;
+    ofstream yFile;
+    rhoFile.precision(9);
+    xFile.precision(9);
+    yFile.precision(9);
+    rhoFile.open ("RHO.txt");
+    xFile.open ("X.txt");
+    yFile.open ("Y.txt");
+    xFile << "NumberOfColumns: " << cells.xPoints;
+    xFile << " NumberOfRows: " << cells.yPoints << "\n";
+    for(int i=0; i < cells.yPoints; i++) {
+        for(int j=0; j < cells.xPoints; j++) {
+            rhoFile << cells.rho[i][j] << " ";
+            xFile << cells.dx*j + 0.5*cells.dx << " ";
+            yFile << cells.dy*i + 0.5*cells.dy << " ";
+        }
+        if (i + 1 < cells.yPoints) {
+            rhoFile << "\n";
+            xFile << "\n";
+            yFile << "\n";
+        }
+    }
+    rhoFile.close();
+    xFile.close();
+    yFile.close();
+}
+
 #include "fluxLimiter.H"
 #include "reconstructFlux.H"
 #include "roeSolver.H"
@@ -76,17 +105,7 @@ int main(int argc, char** argv) {
     cin.get();
 
     while (currentTime < endTime) {
-   
-        // grid refineTunnel;
-        // if (currentTime == 0.0) {
-        //     refineTunnel = refineTunnelStart;
-        // }
-        // else {
-        // grid refineTunnel_oldTime;
-        // refineTunnel_oldTime = refineTunnel;
-        // // refineTunnel.~grid();
-        // refineTunnel = updateAMR(refineTunnel_oldTime,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
-        // }
+
         updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
 
         currentTime += dt;
@@ -98,35 +117,11 @@ int main(int argc, char** argv) {
             #include "AMR.H"
         }
 
+        printGridFiles(tunnel);
         // cin.get();
     }
     
-    ofstream rhoFile;
-    ofstream xFile;
-    ofstream yFile;
-    rhoFile.precision(9);
-    xFile.precision(9);
-    yFile.precision(9);
-    rhoFile.open ("RHO.txt");
-    xFile.open ("X.txt");
-    yFile.open ("Y.txt");
-    xFile << "NumberOfColumns: " << tunnel.xPoints;
-    xFile << " NumberOfRows: " << tunnel.yPoints << "\n";
-    for(int i=0; i < tunnel.yPoints; i++) {
-        for(int j=0; j < tunnel.xPoints; j++) {
-            rhoFile << tunnel.rho[i][j] << " ";
-            xFile << tunnel.dx*j + 0.5*tunnel.dx << " ";
-            yFile << tunnel.dy*i + 0.5*tunnel.dy << " ";
-        }
-        if (i + 1 < tunnel.yPoints) {
-            rhoFile << "\n";
-            xFile << "\n";
-            yFile << "\n";
-        }
-    }
-    rhoFile.close();
-    xFile.close();
-    yFile.close();
+    printGridFiles(tunnel);
 
     return 0;
 }
