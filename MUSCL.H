@@ -8,6 +8,7 @@ void MUSCL
     grid cells_halfTime = cells;
 
     // MUSCL Half Time
+    updateBCs(cells_halfTime);
     for (i=0; i < cells.yPoints; ++i) {
         for (j=0; j < cells.xPoints; ++j) {
             reconstructFlux(i,j,cells_halfTime,soundSpeed);

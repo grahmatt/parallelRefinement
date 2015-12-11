@@ -21,7 +21,7 @@ for (n=0; n < refineFactor; ++n) {
                     pow(refineFactor,2.0);
                 MxFixFPlus[i] -= 
                     refineTunnel.MxF_Minus[i*refineFactor + k][0]/
-                    pow(refineFactor,2);
+                    pow(refineFactor,2.0);
                 MyFixFPlus[i] -= 
                     refineTunnel.MyF_Minus[i*refineFactor + k][0]/
                     pow(refineFactor,2.0);
@@ -39,6 +39,7 @@ for (n=0; n < refineFactor; ++n) {
             }
         }
     }
+    
 }
 // Coarse border cell flux updates
 for (i=0; i < tunnel.yPoints; ++i) {

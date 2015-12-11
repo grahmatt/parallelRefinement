@@ -108,13 +108,13 @@ tunnel.MyG_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.MyG_Minus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 
 // Create fine grid "refineTunnel"
-const int refineFactor = 20;
+const int refineFactor = 2;
 refineColumns.push_back(0);
 refineTunnel.dt = tunnel.dt/refineFactor;
 refineTunnel.dx = tunnel.dx/refineFactor;
 refineTunnel.dy = tunnel.dy/refineFactor;
 // Grid initialize
-refineTunnel.xPoints = refineFactor*20;
+refineTunnel.xPoints = refineFactor*tunnel.xPoints;
 refineTunnel.yPoints = tunnel.yPoints*refineFactor;
 refineTunnel.connect[0] = false;
 refineTunnel.connect[1] = true;

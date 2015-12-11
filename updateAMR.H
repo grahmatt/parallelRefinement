@@ -51,8 +51,16 @@ void updateAMR
             if (refineColumns.size() > 1 && 
                 refineColumns.back() - 1 != refineColumns[refineColumns.size() - 2]) {
                 cout << "Error: Only one refinement zone available\n";
-                refineColumns.clear(); 
+                for (int a=0; a < refineColumns.size(); a++) {
+                    cout << refineColumns[a] << " ";
+                }
+                cout << "\n";
+                bool clearVector = true;
                 for (int a=refineColumns[0]; a < j+1; a++) {
+                    if (clearVector) {
+                        refineColumns.clear();
+                        clearVector = false; 
+                    }
                     refineColumns.push_back(a);
                 }
                 for (int a=0; a < refineColumns.size(); a++) {
@@ -80,6 +88,11 @@ void updateAMR
     else {
         refineCells.connect[1] = true;
     }
+    
+     for (int a=0; a < refineColumns.size(); a++) {
+        cout << refineColumns[a] << " ";
+    }
+    cout << "\n";
     
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
