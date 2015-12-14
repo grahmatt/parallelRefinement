@@ -18,8 +18,8 @@ void updateAMR
     oldRefCol = refineColumns;
     refineColumns.resize(0);
     for (j=0; j < coarseCells.xPoints; ++j) {
-        if (coarseCells.rho[i][j] < 0.95*rhoShock && 
-            coarseCells.rho[i][j] > 1.01*rhoStart) {
+        if (coarseCells.rho[i+5][j] < 0.99*rhoShock && 
+            coarseCells.rho[i+5][j] > 1.01*rhoStart) {
             if (!updateRefCol) {
                 if (n + 1 == oldRefCol.size()) {
                     updateRefCol = true;
@@ -32,22 +32,15 @@ void updateAMR
                 }
             }
             if (refineColumns.size() == 0) {
-                for (int a=0; a < 6; a++) {
-                    if (j - a > 0) {
-                        refineColumns.push_back (j - 1);
-                        if (j - 1 == 0) {
-                            refineCells.connect[0] = coarseCells.connect[0];
-                        }
-                        else {
-                            refineCells.connect[0] = true;
-                        }
-                    }
-                    else {
-                        break;
+                for (int a=5; a >= 0; a--) {
+                    if (j - a >= 0) {
+                        refineColumns.push_back (j - a);
                     }
                 }     
             }
-            refineColumns.push_back (j);
+            else {
+                refineColumns.push_back (j);
+            }
             if (refineColumns.size() > 1 && 
                 refineColumns.back() - 1 != refineColumns[refineColumns.size() - 2]) {
                 cout << "Error: Only one refinement zone available\n";
@@ -88,12 +81,18 @@ void updateAMR
     else {
         refineCells.connect[1] = true;
     }
+    if (refineColumns[0] == 0) {
+        refineCells.connect[0] = coarseCells.connect[0];
+    }
+    else {
+        refineCells.connect[0] = true;
+    }
     
-     for (int a=0; a < refineColumns.size(); a++) {
+    for (int a=0; a < refineColumns.size(); a++) {
         cout << refineColumns[a] << " ";
     }
     cout << "\n";
-    
+
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
     }
@@ -131,6 +130,7 @@ void updateAMR
                 }
             }
             if (existingCol) {
+                cout << "Old j: " << refineColumns[j] << "\n";
                 for (n=0; n < refineFactor; ++n) {
                     for (i=0; i < refineCells.yPoints; ++i) {
                         refineCells.rho[i][j*refineFactor + n] = 
@@ -143,6 +143,7 @@ void updateAMR
                 }
             }
             else {
+                cout << "New j: " << refineColumns[j] << "\n";
                 for (n=0; n < refineFactor; ++n) {
                     for (i=0; i < coarseCells.yPoints; ++i) {
                         for (k=0; k < refineFactor; ++k) {

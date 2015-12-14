@@ -14,6 +14,10 @@ const double rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*
     pow((1.0 - 1.0/(7.0*pow(mach,2.0))),2.5)) - 1.0);
 const double shockSpeed = soundSpeed*mach;
 
+
+
+
+
 // Create coarse grid "tunnel"
 tunnel.dt = dt;
 tunnel.dx = 0.1;
@@ -106,9 +110,20 @@ tunnel.MyF_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.MyF_Minus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.MyG_Plus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 tunnel.MyG_Minus.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
+// Initialize old values for refinement BCs
+tunnel.oldRhoLeft.resize(tunnel.yPoints+2,0);
+tunnel.oldMxLeft.resize(tunnel.yPoints+2,0);
+tunnel.oldMyLeft.resize(tunnel.yPoints+2,0);
+tunnel.oldRhoRight.resize(tunnel.yPoints+2,0);
+tunnel.oldMxRight.resize(tunnel.yPoints+2,0);
+tunnel.oldMyRight.resize(tunnel.yPoints+2,0);
+
+
+
+
 
 // Create fine grid "refineTunnel"
-const int refineFactor = 2;
+const int refineFactor = 4;
 refineColumns.push_back(0);
 refineTunnel.dt = tunnel.dt/refineFactor;
 refineTunnel.dx = tunnel.dx/refineFactor;
@@ -126,8 +141,7 @@ refineTunnel.MyBCsLR.resize(refineTunnel.yPoints, vector<double>(4,0));
 refineTunnel.rhoBCsLR_PlusMinus.resize(refineTunnel.yPoints, vector<double>(2,0));
 refineTunnel.MxBCsLR_PlusMinus.resize(refineTunnel.yPoints, vector<double>(2,0));
 refineTunnel.MyBCsLR_PlusMinus.resize(refineTunnel.yPoints, vector<double>(2,0));
-// Initialize first column for first time step
-// refineTunnel.xPoints = refineColumns.size()*refineFactor;
+// Initialize memory for maximum grid refinement size
 refineTunnel.rho.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,rhoStart));
 refineTunnel.Mx.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.My.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
@@ -149,9 +163,6 @@ refineTunnel.MyF_Plus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.x
 refineTunnel.MyF_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.MyG_Plus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
-
-// updateBCs(refineTunnel,tunnel,refineColumns,refineFactor);
-
 // Initialize flux fixes
 rhoFixFPlus.resize(tunnel.yPoints,0);
 rhoFixFMinus.resize(tunnel.yPoints,0);

@@ -34,6 +34,12 @@ struct grid {
     vector<vector<double> > MyF_Minus;
     vector<vector<double> > MyG_Plus;
     vector<vector<double> > MyG_Minus;
+    vector<double> oldRhoLeft;
+    vector<double> oldMxLeft;
+    vector<double> oldMyLeft;
+    vector<double> oldRhoRight;
+    vector<double> oldMxRight;
+    vector<double> oldMyRight;
     double dt;
     double dx;
     double dy;
@@ -73,10 +79,13 @@ int main(int argc, char** argv) {
         currentTime += dt;
         cout << "t = " << currentTime << "\n";
 
-        MUSCL(tunnel,soundSpeed); 
+        MUSCL(tunnel,soundSpeed);
+
+        cout << "Coarse Ran\n";
 
         if (refineColumns.size() > 0) {
             #include "AMR.H"
+            cout << "Completed AMR\n";
         }
 
         // printGridFiles(tunnel);
