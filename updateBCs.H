@@ -50,6 +50,7 @@ void updateBCs
         }
     }
 }
+
 // Refine cell boundary values storing coarse cell old time values
 void updateBCs
 (
@@ -127,16 +128,6 @@ void updateBCs
                         coarseCells.oldMxLeft[i] = coarseCells.Mx[i-1][refineColumns[0]-1];
                         coarseCells.oldMyLeft[i] = coarseCells.My[i-1][refineColumns[0]-1];
                     }
-                    
-                    // for (k=0; k < refineFactor; ++k) {
-                    //     cells.rhoBCsLR[i*refineFactor + k][0] = coarseCells.rho[i][refineColumns[0] - 1];
-                    //     cells.MxBCsLR[i*refineFactor + k][0] = coarseCells.rho[i][refineColumns[0] - 1];
-                    //     cells.MyBCsLR[i*refineFactor + k][0] = coarseCells.rho[i][refineColumns[0] - 1];
-                    //     // For Roe Solver
-                    //     cells.rhoBCsLR[i*refineFactor + k][2] = coarseCells.rho[i][refineColumns[0] - 1];
-                    //     cells.MxBCsLR[i*refineFactor + k][2] = coarseCells.rho[i][refineColumns[0] - 1];
-                    //     cells.MyBCsLR[i*refineFactor + k][2] = coarseCells.rho[i][refineColumns[0] - 1];
-                    // }
                 }
             }
             else if (m == 1) { // Right
@@ -156,16 +147,6 @@ void updateBCs
                         coarseCells.oldMxRight[i] = coarseCells.Mx[i-1][refineColumns.back()+1];
                         coarseCells.oldMyRight[i] = coarseCells.My[i-1][refineColumns.back()+1];
                     }
-                    
-                    // for (k=0; k < refineFactor; ++k) {
-                    //     cells.rhoBCsLR[i*refineFactor + k][1] = coarseCells.rho[i][refineColumns.back() + 1];
-                    //     cells.MxBCsLR[i*refineFactor + k][1] = cells.Mx[i][refineColumns.back() + 1];
-                    //     cells.MyBCsLR[i*refineFactor + k][1] = cells.My[i][refineColumns.back() + 1];
-                    //     // For Roe Solver
-                    //     cells.rhoBCsLR[i*refineFactor + k][3] = cells.rho[i][refineColumns.back() + 1];
-                    //     cells.MxBCsLR[i*refineFactor + k][3] = cells.Mx[i][refineColumns.back() + 1];
-                    //     cells.MyBCsLR[i*refineFactor + k][3] = cells.My[i][refineColumns.back() + 1];
-                    // }
                 }
             }
             else {
@@ -174,6 +155,7 @@ void updateBCs
         }
     }
 }
+
 // Refine cell interpolated boundary updates
 void updateBCs
 (
