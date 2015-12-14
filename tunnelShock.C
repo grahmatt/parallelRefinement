@@ -81,16 +81,13 @@ int main(int argc, char** argv) {
 
         MUSCL(tunnel,soundSpeed);
 
-        cout << "Coarse Ran\n";
-
         if (refineColumns.size() > 0) {
             #include "AMR.H"
-            cout << "Completed AMR\n";
         }
 
         // printGridFiles(tunnel);
-        printGridFiles(tunnel,refineTunnel,refineColumns);
-        cin.get();
+        // printGridFiles(tunnel,refineTunnel,refineColumns);
+        // cin.get();
     }
     
     // printGridFiles(tunnel);

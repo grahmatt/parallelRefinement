@@ -73,7 +73,7 @@ void printGridFiles(grid& coarseCells, grid& refinedCells, vector<int> refineCol
     for(int i=0; i < refinedCells.yPoints; i++) {
         for(int j=0; j < refinedCells.xPoints; j++) {
             rhoFileRefine << refinedCells.rho[i][j] << " ";
-            xFileRefine << refinedCells.dx*j + 0.5*refinedCells.dx << " ";
+            xFileRefine << refineColumns[0]*coarseCells.dx + refinedCells.dx*j + 0.5*refinedCells.dx << " ";
             yFileRefine << refinedCells.dy*i + 0.5*refinedCells.dy << " ";
         }
         if (i + 1 < refinedCells.yPoints) {

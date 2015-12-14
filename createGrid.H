@@ -1,8 +1,8 @@
 int i, j, n, m, k;
 bool updateRefCol, existingCol;
 vector<int> refineColumns;
-vector<double> rhoFixFPlus, rhoFixFMinus, MxFixFPlus, MxFixFMinus, 
-    MyFixFPlus, MyFixFMinus;
+// vector<double> rhoFixFPlus, rhoFixFMinus, MxFixFPlus, MxFixFMinus, 
+//     MyFixFPlus, MyFixFMinus;
 grid tunnel, refineTunnel;
 
 // Physical values
@@ -123,7 +123,7 @@ tunnel.oldMyRight.resize(tunnel.yPoints+2,0);
 
 
 // Create fine grid "refineTunnel"
-const int refineFactor = 4;
+const int refineFactor = 10;
 refineColumns.push_back(0);
 refineTunnel.dt = tunnel.dt/refineFactor;
 refineTunnel.dx = tunnel.dx/refineFactor;
@@ -164,9 +164,9 @@ refineTunnel.MyF_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.
 refineTunnel.MyG_Plus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 // Initialize flux fixes
-rhoFixFPlus.resize(tunnel.yPoints,0);
-rhoFixFMinus.resize(tunnel.yPoints,0);
-MxFixFPlus.resize(tunnel.yPoints,0);
-MxFixFMinus.resize(tunnel.yPoints,0);
-MyFixFPlus.resize(tunnel.yPoints,0);
-MyFixFMinus.resize(tunnel.yPoints,0);
+// rhoFixFPlus.resize(tunnel.yPoints,0);
+// rhoFixFMinus.resize(tunnel.yPoints,0);
+// MxFixFPlus.resize(tunnel.yPoints,0);
+// MxFixFMinus.resize(tunnel.yPoints,0);
+// MyFixFPlus.resize(tunnel.yPoints,0);
+// MyFixFMinus.resize(tunnel.yPoints,0);
