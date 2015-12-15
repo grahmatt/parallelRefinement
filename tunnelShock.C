@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <mpi.h>
 using namespace std;
 
 struct grid {
@@ -66,10 +67,18 @@ int main(int argc, char** argv) {
     //     n = atoi(argv[1]);
     // }
 
+    int rank, size, procRow, procCol, rowLenght, colLenght, globalRow, globalCol;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
     #include "timeControls.H"
     #include "createGrid.H"
 
-    cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
+    if (rank == 0) {
+        cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
+    }
     cin.get();
 
     while (currentTime < endTime) {
@@ -77,7 +86,9 @@ int main(int argc, char** argv) {
         updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
 
         currentTime += dt;
-        cout << "t = " << currentTime << "\n";
+        if (rank == 0) {
+            cout << "t = " << currentTime << "\n";
+        }
 
         MUSCL(tunnel,soundSpeed);
 
@@ -90,9 +101,12 @@ int main(int argc, char** argv) {
         // cin.get();
     }
     
-    // printGridFiles(tunnel);
-    printGridFiles(tunnel,refineTunnel,refineColumns);
+    if (rank == 0) {
+        // printGridFiles(tunnel);
+        printGridFiles(tunnel,refineTunnel,refineColumns);
+    }
 
+    MPI_Finalize();
     return 0;
 }
 
