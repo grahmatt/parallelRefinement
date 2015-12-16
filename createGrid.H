@@ -12,14 +12,21 @@ const double rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*
     pow((1.0 - 1.0/(7.0*pow(mach,2.0))),2.5)) - 1.0);
 const double shockSpeed = soundSpeed*mach;
 
+// Global values
+const int xPointsGlobal = 5000;
+const int yPointsGlobal = 1000;
+
 
 
 // Create coarse grid "tunnel"
 tunnel.dt = dt;
 tunnel.dx = 0.1;
 tunnel.dy = 0.1;
-tunnel.xPoints = 50;
-tunnel.yPoints = 10; 
+tunnel.xPoints = floor(xPointsGlobal/size);
+tunnel.yPoints = yPointsGlobal;
+if (rank < (xPointsGlobal % size)) {
+    ++tunnel.xPoints;
+}
 // Grid initialize
 tunnel.rho.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,rhoStart)); //[tunnel.yPoints][tunnel.xPoints];
 tunnel.Mx.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
@@ -27,8 +34,12 @@ tunnel.My.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,0));
 // BCs initialize
 for (i=0; i < 4; ++i) {
     if (i == 0) { // Left
-        tunnel.connect[i] = false;
-        tunnel.bounds[i] = "value";
+        if (rank == 0) {
+            tunnel.connect[i] = false;
+        }
+        else {
+            tunnel.connect[i] = true;
+        }
         tunnel.rhoBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
         tunnel.MxBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
         tunnel.MyBCsLR.resize(tunnel.yPoints, vector<double>(4,0));
@@ -37,11 +48,17 @@ for (i=0; i < 4; ++i) {
         tunnel.MxBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0));
         tunnel.MyBCsLR_PlusMinus.resize(tunnel.yPoints, vector<double>(2,0));
         for (n=0; n < tunnel.yPoints; ++n) {
-            tunnel.rhoBCsLR[n][0] = rhoShock;
+            if (rank == 0) {
+                tunnel.rhoBCsLR[n][0] = rhoShock;
+                tunnel.rhoBCsLR[n][2] = rhoShock;
+            }
+            else {
+                tunnel.rhoBCsLR[n][0] = rhoStart;
+                tunnel.rhoBCsLR[n][2] = rhoStart;
+            }
             tunnel.MxBCsLR[n][0] = 0.0; //rhoShock*shockSpeed;
             tunnel.MyBCsLR[n][0] = 0.0;
             // For Roe Solver
-            tunnel.rhoBCsLR[n][2] = rhoShock;
             tunnel.MxBCsLR[n][2] = 0.0; //rhoShock*shockSpeed;
             tunnel.MyBCsLR[n][2] = 0.0;
         }

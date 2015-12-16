@@ -79,12 +79,10 @@ int main(int argc, char** argv) {
     if (rank == 0) {
         cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
     }
-    cin.get();
+    // cin.get();
 
     while (currentTime < endTime) {
-
-        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
-
+        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart,rank,currentTime);
         currentTime += dt;
         if (rank == 0) {
             cout << "t = " << currentTime << "\n";

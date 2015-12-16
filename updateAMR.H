@@ -5,7 +5,9 @@ void updateAMR
     const int refineFactor,
     vector<int>& refineColumns,
     const double rhoShock,
-    const double rhoStart
+    const double rhoStart,
+    int rank,
+    double currentTime
 ) 
 {
     int a, i, j, k, n, m, rowHalf;
@@ -56,32 +58,40 @@ void updateAMR
             }
         }
     }
-    if (refineColumns.empty()) {
+
+    if (rank == 0 && currentTime < 5*coarseCells.dt && refineColumns.empty()) {
         refineColumns.push_back(0);
     }
-    for(a=0; a < 6; a++) {
-        if (refineColumns.back() != coarseCells.xPoints - 1) {
-            refineColumns.push_back (refineColumns.back() + 1);
+
+    if (!refineColumns.empty()) {
+        for(a=0; a < 6; a++) {
+            if (refineColumns.back() != coarseCells.xPoints - 1 && !refineColumns.empty()) {
+                refineColumns.push_back (refineColumns.back() + 1);
+            }
+            else {
+                break;
+            }
+        }
+
+        if (refineColumns.back() == coarseCells.xPoints - 1) {
+            refineCells.connect[1] = coarseCells.connect[1];
         }
         else {
-            break;
+            refineCells.connect[1] = true;
+        }
+
+        if (refineColumns[0] == 0) {
+            refineCells.connect[0] = coarseCells.connect[0];
+        }
+        else {
+            refineCells.connect[0] = true;
         }
     }
-    if (refineColumns.back() == coarseCells.xPoints - 1) {
-        refineCells.connect[1] = coarseCells.connect[1];
-    }
-    else {
-        refineCells.connect[1] = true;
-    }
-    if (refineColumns[0] == 0) {
-        refineCells.connect[0] = coarseCells.connect[0];
-    }
-    else {
-        refineCells.connect[0] = true;
-    }
+
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
     }
+
     // Grid update
     if (updateRefCol || refineColumns.size() != refineCells.xPoints/refineFactor) {
         grid refineCells_oldTime = refineCells;
@@ -144,5 +154,8 @@ void updateAMR
             }
         }
     }
-    updateBCs(refineCells,coarseCells,refineColumns,refineFactor);
+
+    if (!refineColumns.empty()) {
+        updateBCs(refineCells,coarseCells,refineColumns,refineFactor);
+    }
 }
