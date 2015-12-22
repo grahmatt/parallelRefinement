@@ -45,7 +45,6 @@ struct grid {
     double dx;
     double dy;
     bool connect [4];
-    string bounds [4];
     int xPoints;
     int yPoints;
 };
@@ -59,13 +58,6 @@ struct grid {
 #include "MUSCL.H"
 
 int main(int argc, char** argv) {
-    // if (argc < 2){
-    //     cout << "Missing matrix size: \"mpirun -np <#> hw3.bin <matrix size>\"" << endl;
-    //     return 0;
-    // }
-    // else {
-    //     n = atoi(argv[1]);
-    // }
 
     int rank, size, procRow, procCol, rowLenght, colLenght, globalRow, globalCol;
 

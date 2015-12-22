@@ -64,8 +64,12 @@ for (i=0; i < 4; ++i) {
         }
     }
     else if (i == 1) { // Right
-        tunnel.connect[i] = false;
-        tunnel.bounds[i] = "zeroGradient";
+        if (rank == size - 1) {
+            tunnel.connect[i] = false;
+        }
+        else {
+            tunnel.connect[i] = true;
+        }
         for (n=0; n < tunnel.yPoints; ++n) {
             tunnel.rhoBCsLR[n][1] = rhoStart;
             tunnel.MxBCsLR[n][1] = 0.0;
@@ -78,7 +82,6 @@ for (i=0; i < 4; ++i) {
     }
     else if (i == 2) { // Bottom
         tunnel.connect[i] = false;
-        tunnel.bounds[i] = "wall";
         tunnel.rhoBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
         tunnel.MxBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
         tunnel.MyBCsBT.resize(4, vector<double>(tunnel.xPoints,0));
@@ -98,7 +101,6 @@ for (i=0; i < 4; ++i) {
     }
     else { // Top
         tunnel.connect[i] = false;
-        tunnel.bounds[i] = "wall";
         for (n=0; n < tunnel.xPoints; ++n) {
             tunnel.rhoBCsBT[1][n] = rhoStart;
             tunnel.MxBCsBT[1][n] = 0.0;
@@ -135,15 +137,15 @@ tunnel.oldMyRight.resize(tunnel.yPoints+2,0);
 
 // Create fine grid "refineTunnel"
 const int refineFactor = 10;
-refineColumns.push_back(0);
+// refineColumns.push_back(0);
 refineTunnel.dt = tunnel.dt/refineFactor;
 refineTunnel.dx = tunnel.dx/refineFactor;
 refineTunnel.dy = tunnel.dy/refineFactor;
 // Grid initialize
 refineTunnel.xPoints = refineFactor*tunnel.xPoints;
 refineTunnel.yPoints = tunnel.yPoints*refineFactor;
-refineTunnel.connect[0] = false;
-refineTunnel.connect[1] = true;
+// refineTunnel.connect[0] = false;
+// refineTunnel.connect[1] = true;
 refineTunnel.connect[2] = tunnel.connect[2];
 refineTunnel.connect[3] = tunnel.connect[3];
 refineTunnel.rhoBCsLR.resize(refineTunnel.yPoints, vector<double>(4,0));
