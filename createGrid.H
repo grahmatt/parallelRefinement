@@ -176,3 +176,22 @@ refineTunnel.MyF_Plus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.x
 refineTunnel.MyF_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.MyG_Plus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
 refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.xPoints,0));
+
+
+
+// Create MPI buffers
+if (rank == 0) {
+    double sendRight_1[refineTunnel.yPoints], sendRight_2[refineTunnel.yPoints],
+        recvRight_1[refineTunnel.yPoints], recvRight_2[refineTunnel.yPoints];
+    int count
+}
+else if (rank == size - 1) {
+
+}
+else {
+
+}
+
+
+
+

@@ -50,7 +50,46 @@ void updateBCs
         }
         else {
             // transfer left right bcs
-
+            if (i == 0) { // Left
+                for (n=0; n < cells.yPoints; ++n) {
+                    sendLeftRho_1[n] = cells.rho[n][0];
+                    sendLeftRho_2[n] = cells.rho[n][1];
+                }
+                ierr = MPI_Isend(&sendLeftRho_1[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
+                ierr = MPI_Isend(&sendLeftRho_2[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendRho_request[1]);
+                ierr = MPI_Irecv(&recvLeftRho_1[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
+                ierr = MPI_Irecv(&recvLeftRho_2[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvRho_request[1]);
+                ierr = MPI_Isend(&refineColumns[0], refineColumns.size(), MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendInfo_request[0]);
+                ierr = MPI_Irecv(&recvLeftColumns[0], cells.xPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvInfo_request[1]);
+            }
+            else if (i == 1) { // Right
+                for (n=0; n < cells.yPoints; ++n) {
+                    sendRightRho_1[n] = cells.rho[n][cells.xPoints-1];
+                    sendRightRho_2[n] = cells.rho[n][cells.xPoints-2];
+                }
+                ierr = MPI_Isend(&sendRightRho_1[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
+                ierr = MPI_Isend(&sendRightRho_2[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
+                ierr = MPI_Irecv(&recvRightRho_1[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
+                ierr = MPI_Irecv(&recvRightRho_2[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
+                ierr = MPI_Isend(&refineColumns[0], refineColumns.size(), MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendInfo_request[0]);
+                ierr = MPI_Irecv(&recvRightColumns[0], cells.xPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvInfo_request[1]);
+            }
+            else {
+                cout << "Error: Trying to transfer top and bottom cells!\n"
+                    << "updateBCs.H line 71 \n";
+            }
+        }
+    }
+    // -------------------------------- Add Code --------------------
+    // wait for a recv
+    for (n=0; n < cells.yPoints; ++n) {
+        if (cells.connect[0]) {
+            cells.rhoBCsLR[n][0] = recvLeftRho_1[n];
+            cells.rhoBCsLR[n][2] = recvLeftRho_2[n];
+        }
+        if (cells.connect[1]) {
+            cells.rhoBCsLR[n][1] = recvRightRho_1[n];
+            cells.rhoBCsLR[n][3] = recvRightRho_2[n];
         }
     }
 }
@@ -115,7 +154,7 @@ void updateBCs
             }
         }
         else {
-            if (m == 0 && refineColumns[0] != 0) { // Left
+            if (m == 0) { // Left
                 if (refineColumns[0] != 0) {
                     for (i=0; i < coarseCells.yPoints+2; ++i) {
                         if (i == 0) {
