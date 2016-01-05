@@ -130,7 +130,7 @@ void MUSCL
     int i, j;
     grid refineCells_halfTime = refineCells;
     // MUSCL Half Time
-    updateBCs(refineCells,coarseCells,refineColumns,refineFactor,timeSpot+0.0);
+    updateBCs(refineCells,coarseCells,refineColumns,refineFactor,timeSpot);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,soundSpeed);
@@ -153,7 +153,7 @@ void MUSCL
     }
 
     // MUSCL Full Time
-    updateBCs(refineCells_halfTime,coarseCells,refineColumns,refineFactor,timeSpot+0.5);
+    updateBCs(refineCells_halfTime,coarseCells,refineColumns,refineFactor,timeSpot+0.5*refineCells.dt);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,refineCells,soundSpeed);   

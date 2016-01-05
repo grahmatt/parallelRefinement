@@ -10,7 +10,7 @@ void updateAMR
     double currentTime
 ) 
 {
-    int a, i, j, k, n, m, rowHalf;
+    int a, b, i, j, k, n, m, rowHalf;
     bool updateRefCol, existingCol;
     vector<int> oldRefCol;
 
@@ -20,6 +20,8 @@ void updateAMR
     updateRefCol = false;
     oldRefCol = refineColumns;
     refineColumns.resize(0);
+    refineColumnsSendRight.resize(0);
+    refineColumnsSendLeft.resize(0);
     for (j=0; j < coarseCells.xPoints; ++j) {
         if (coarseCells.rho[rowHalf][j] < 0.99*rhoShock && 
             coarseCells.rho[rowHalf][j] > 1.01*rhoStart) {
@@ -38,6 +40,15 @@ void updateAMR
                 for (a=5; a >= 0; a--) {
                     if (j - a >= 0) {
                         refineColumns.push_back (j - a);
+                    }
+                    else if (coarseCells.connect[0]) {    // For parallel
+                        for () {
+                            // refineColumnsSendLeft.push_back(???)
+                        }
+                        break;
+                    }
+                    else {
+                        break;
                     }
                 }     
             }
@@ -64,9 +75,15 @@ void updateAMR
     }
 
     if (!refineColumns.empty()) {
-        for(a=0; a < 6; a++) {
+        for (a=0; a < 6; a++) {
             if (refineColumns.back() != coarseCells.xPoints - 1 && !refineColumns.empty()) {
                 refineColumns.push_back (refineColumns.back() + 1);
+            }
+            else if (coarseCells.connect[1]) {              // For parallel
+                for (b=0; b - a < 6; b++) {
+                    refineColumnsSendRight.push_back(b);
+                }
+                break;
             }
             else {
                 break;
@@ -91,6 +108,8 @@ void updateAMR
     if (!updateRefCol && refineColumns.size() != oldRefCol.size()) {
         updateRefCol = true;
     }
+
+    
 
     // Grid update
     if (updateRefCol || refineColumns.size() != refineCells.xPoints/refineFactor) {
