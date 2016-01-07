@@ -180,15 +180,16 @@ refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.
 
 
 // Create MPI buffers
-if (rank == 0) {
-    double sendRight_1[refineTunnel.yPoints], sendRight_2[refineTunnel.yPoints],
-        recvRight_1[refineTunnel.yPoints], recvRight_2[refineTunnel.yPoints];
-    int count
+int count;
+if (rank != 0) {
+    vector<int> refineColumnsSendLeft, refineColumnsRecvLeft;
+    int refColSizeLeft;
 }
-else if (rank == size - 1) {
+if (rank != size-1) {
+    vector<int> refineColumnsSendRight, refineColumnsRecvRight;
+    int refColSizeRight;
+}
 
-}
-else {
 
 }
 

@@ -74,7 +74,10 @@ int main(int argc, char** argv) {
     // cin.get();
 
     while (currentTime < endTime) {
-        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart,rank,currentTime);
+        
+        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,
+            rhoStart,rank,size,currentTime);
+
         currentTime += dt;
         if (rank == 0) {
             cout << "t = " << currentTime << "\n";
