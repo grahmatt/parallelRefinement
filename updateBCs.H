@@ -1,10 +1,17 @@
 // Coarse cell boundary condition updates
 void updateBCs
 (
-    grid& cells
+    grid& cells,
+    int rank,
+    double& sendLeft,
+    double& recvLeft,
+    double& sendRight,
+    double& recvRight
 ) 
 {
-    int i, n;
+    int i, n, phi, count = 0;
+    MPI_Status  status[2];
+    MPI_Request send_request[2], recv_request[2];
     for (i=0; i < 4; ++i) {
         if (!cells.connect[i]) {
             if (i == 0) { // Left
@@ -51,45 +58,79 @@ void updateBCs
         else {
             // transfer left right bcs
             if (i == 0) { // Left
-                for (n=0; n < cells.yPoints; ++n) {
-                    sendLeftRho_1[n] = cells.rho[n][0];
-                    sendLeftRho_2[n] = cells.rho[n][1];
+                for (phi=0; phi < 6; ++phi) {
+                    for (n=0; n < cells.yPoints; ++n) {
+                        switch (phi) {
+                            case 0: sendLeft[n] = cells.rho[n][0];   
+                            case 1: sendLeft[n + cells.yPoints] = cells.Mx[n][0];
+                            case 2: sendLeft[n + phi*cells.yPoints] = cells.My[n][0];
+                            case 3: sendLeft[n + phi*cells.yPoints] = cells.rho[n][1];
+                            case 4: sendLeft[n + phi*cells.yPoints] = cells.Mx[n][1];
+                            case 5: sendLeft[n + phi*cells.yPoints] = cells.My[n][1];
+                        }
+                    }
                 }
-                ierr = MPI_Isend(&sendLeftRho_1[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
-                ierr = MPI_Isend(&sendLeftRho_2[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendRho_request[1]);
-                ierr = MPI_Irecv(&recvLeftRho_1[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
-                ierr = MPI_Irecv(&recvLeftRho_2[0], cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvRho_request[1]);
-                ierr = MPI_Isend(&refineColumns[0], refineColumns.size(), MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &sendInfo_request[0]);
-                ierr = MPI_Irecv(&recvLeftColumns[0], cells.xPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recvInfo_request[1]);
+                ierr = MPI_Isend(&sendLeft[0], 6*cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &send_request[0]);
+                ierr = MPI_Irecv(&recvLeft[0], 6*cells.yPoints, MPI_DOUBLE, rank-1, 0, MPI_COMM_WORLD, &recv_request[0]);
+                ++count;
             }
             else if (i == 1) { // Right
-                for (n=0; n < cells.yPoints; ++n) {
-                    sendRightRho_1[n] = cells.rho[n][cells.xPoints-1];
-                    sendRightRho_2[n] = cells.rho[n][cells.xPoints-2];
+                for (phi=0; phi < 6; ++phi) {
+                    for (n=0; n < cells.yPoints; ++n) {
+                        switch (phi) {
+                            case 0: sendRight[n] = cells.rho[n][cells.xPoints-1];   
+                            case 1: sendRight[n + cells.yPoints] = cells.Mx[n][cells.xPoints-1];
+                            case 2: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-1];
+                            case 3: sendRight[n + phi*cells.yPoints] = cells.rho[n][cells.xPoints-2];
+                            case 4: sendRight[n + phi*cells.yPoints] = cells.Mx[n][cells.xPoints-2];
+                            case 5: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-2];
+                        }
+                    }
                 }
-                ierr = MPI_Isend(&sendRightRho_1[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
-                ierr = MPI_Isend(&sendRightRho_2[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendRho_request[0]);
-                ierr = MPI_Irecv(&recvRightRho_1[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
-                ierr = MPI_Irecv(&recvRightRho_2[0], cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvRho_request[0]);
-                ierr = MPI_Isend(&refineColumns[0], refineColumns.size(), MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &sendInfo_request[0]);
-                ierr = MPI_Irecv(&recvRightColumns[0], cells.xPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recvInfo_request[1]);
+                if (count == 0) {
+                    ierr = MPI_Isend(&sendRight[0], 6*cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &send_request[0]);
+                    ierr = MPI_Irecv(&recvRight[0], 6*cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
+                }
+                else {
+                    ierr = MPI_Isend(&sendRight[0], 6*cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &send_request[1]);
+                    ierr = MPI_Irecv(&recvRight[0], 6*cells.yPoints, MPI_DOUBLE, rank+1, 0, MPI_COMM_WORLD, &recv_request[1]);
+                }
             }
             else {
                 cout << "Error: Trying to transfer top and bottom cells!\n"
-                    << "updateBCs.H line 71 \n";
+                    << "updateBCs.H line 99 \n";
             }
         }
     }
-    // -------------------------------- Add Code --------------------
-    // wait for a recv
-    for (n=0; n < cells.yPoints; ++n) {
+    if (count > 0) {
+        ierr = MPI_Waitall(count, recv_request, status);
         if (cells.connect[0]) {
-            cells.rhoBCsLR[n][0] = recvLeftRho_1[n];
-            cells.rhoBCsLR[n][2] = recvLeftRho_2[n];
+            for (phi=0; phi < 6; ++phi) {
+                for (n=0; n < cells.yPoints; ++n) {
+                    switch (phi) {
+                        case 0: cells.rhoBCsLR[n][0] = recvLeft[n];   
+                        case 1: cells.MxBCsLR[n][0] = recvLeft[n + cells.yPoints];
+                        case 2: cells.MyBCsLR[n][0] = recvLeft[n + phi*cells.yPoints];
+                        case 3: cells.rhoBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                        case 4: cells.MxBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                        case 5: cells.MyBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                    }
+                }
+            }
         }
         if (cells.connect[1]) {
-            cells.rhoBCsLR[n][1] = recvRightRho_1[n];
-            cells.rhoBCsLR[n][3] = recvRightRho_2[n];
+            for (phi=0; phi < 6; ++phi) {
+                for (n=0; n < cells.yPoints; ++n) {
+                    switch (phi) {
+                        case 0: cells.rhoBCsLR[n][1] = recvRight[n];   
+                        case 1: cells.MxBCsLR[n][1] = recvRight[n + cells.yPoints];
+                        case 2: cells.MyBCsLR[n][1] = recvRight[n + phi*cells.yPoints];
+                        case 3: cells.rhoBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                        case 4: cells.MxBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                        case 5: cells.MyBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                    }
+                }
+            }
         }
     }
 }
@@ -100,10 +141,17 @@ void updateBCs
     grid& cells,
     grid& coarseCells,
     vector<int> refineColumns,
-    const int refineFactor
+    const int refineFactor,
+    int rank,
+    double& sendLeft,
+    double& recvLeft,
+    double& sendRight,
+    double& recvRight
 ) 
 {
-    int i, j, m, n, k;
+    int i, j, m, n, k, phi, count = 0;
+    MPI_Status  status[2];
+    MPI_Request send_request[2], recv_request[2];
     for (m=0; m < 4; ++m) {
         if (!cells.connect[m]) {
             if (m == 0) { // Left
@@ -176,7 +224,7 @@ void updateBCs
                 }
                 else {
                     // Exchange refineColumns
-
+                    
                 }
             }
             else if (m == 1) { // Right
@@ -218,10 +266,17 @@ void updateBCs
     grid& coarseCells,
     vector<int> refineColumns,
     const int refineFactor,
-    double timeSpot
+    double timeSpot,
+    int rank,
+    double& sendLeft,
+    double& recvLeft,
+    double& sendRight,
+    double& recvRight
 ) 
 {
-    int i, j, m, n, k;
+    int i, j, m, n, k, phi, count = 0;
+    MPI_Status  status[2];
+    MPI_Request send_request[2], recv_request[2];
     for (m=0; m < 4; ++m) {
         if (!cells.connect[m]) {
             if (m == 0) { // Left

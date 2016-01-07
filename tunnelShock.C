@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
             cout << "t = " << currentTime << "\n";
         }
 
-        MUSCL(tunnel,soundSpeed);
+        MUSCL(tunnel, soundSpeed, rank, sendLeft, recvLeft, sendRight, recvRight);
 
         if (refineColumns.size() > 0) {
             #include "AMR.H"

@@ -262,6 +262,7 @@ void updateAMR
     }
 
     if (!refineColumns.empty()) {
-        updateBCs(refineCells,coarseCells,refineColumns,refineFactor);
+        updateBCs(refineCells, coarseCells, refineColumns, refineFactor,
+            rank, sendLeft, recvLeft, sendRight, recvRight);
     }
 }

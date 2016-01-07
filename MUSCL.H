@@ -1,14 +1,19 @@
 void MUSCL
 (
     grid& cells,
-    const double soundSpeed
+    const double soundSpeed,
+    int rank,
+    double& sendLeft,
+    double& recvLeft,
+    double& sendRight,
+    double& recvRight
 ) 
 {
     int i, j;
     grid cells_halfTime = cells;
 
     // MUSCL Half Time
-    updateBCs(cells_halfTime);
+    updateBCs(cells_halfTime, rank, sendLeft, recvLeft, sendRight, recvRight);
     for (i=0; i < cells.yPoints; ++i) {
         for (j=0; j < cells.xPoints; ++j) {
             reconstructFlux(i,j,cells_halfTime,soundSpeed);
@@ -29,7 +34,7 @@ void MUSCL
             );
         }
     }
-    updateBCs(cells_halfTime);
+    updateBCs(cells_halfTime, rank, sendLeft, recvLeft, sendRight, recvRight);
 
     // MUSCL Full Time
     for (i=0; i < cells.yPoints; ++i) {
@@ -114,7 +119,7 @@ void MUSCL
             }
         }
     }
-    updateBCs(cells);
+    updateBCs(cells, rank, sendLeft, recvLeft, sendRight, recvRight);
 }
 
 void MUSCL
@@ -124,13 +129,19 @@ void MUSCL
     grid& coarseCells,
     vector<int> refineColumns,
     const int refineFactor,
-    int timeSpot
+    int timeSpot,
+    int rank,
+    double& sendLeft,
+    double& recvLeft,
+    double& sendRight,
+    double& recvRight
 ) 
 {
     int i, j;
     grid refineCells_halfTime = refineCells;
     // MUSCL Half Time
-    updateBCs(refineCells,coarseCells,refineColumns,refineFactor,timeSpot);
+    updateBCs(refineCells, coarseCells, refineColumns, refineFactor, timeSpot, 
+        rank, sendLeft, recvLeft, sendRight, recvRight);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,soundSpeed);
@@ -153,7 +164,8 @@ void MUSCL
     }
 
     // MUSCL Full Time
-    updateBCs(refineCells_halfTime,coarseCells,refineColumns,refineFactor,timeSpot+0.5*refineCells.dt);
+    updateBCs(refineCells_halfTime, coarseCells, refineColumns, refineFactor, timeSpot+0.5*refineCells.dt, 
+        rank, sendLeft, recvLeft, sendRight, recvRight);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,refineCells,soundSpeed);   
