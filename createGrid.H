@@ -13,8 +13,8 @@ const double rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*
 const double shockSpeed = soundSpeed*mach;
 
 // Global values
-const int xPointsGlobal = 5000;
-const int yPointsGlobal = 1000;
+const int xPointsGlobal = 50;
+const int yPointsGlobal = 10;
 
 
 
@@ -137,15 +137,12 @@ tunnel.oldMyRight.resize(tunnel.yPoints+2,0);
 
 // Create fine grid "refineTunnel"
 const int refineFactor = 10;
-// refineColumns.push_back(0);
 refineTunnel.dt = tunnel.dt/refineFactor;
 refineTunnel.dx = tunnel.dx/refineFactor;
 refineTunnel.dy = tunnel.dy/refineFactor;
 // Grid initialize
 refineTunnel.xPoints = refineFactor*tunnel.xPoints;
 refineTunnel.yPoints = tunnel.yPoints*refineFactor;
-// refineTunnel.connect[0] = false;
-// refineTunnel.connect[1] = true;
 refineTunnel.connect[2] = tunnel.connect[2];
 refineTunnel.connect[3] = tunnel.connect[3];
 refineTunnel.rhoBCsLR.resize(refineTunnel.yPoints, vector<double>(4,0));
@@ -180,21 +177,6 @@ refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.
 
 
 // Create MPI buffers
-// if (rank == 0) {
-//     double sendLeft, recvLeft, sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
-// }
-// else if (rank == size - 1) {
-//     double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints], sendRight, recvRight;
-// }
-// else {
-//     double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints],
-//         sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
-// }
 double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints],
     sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
 int vectorSize[2];
-
-
-
-
-

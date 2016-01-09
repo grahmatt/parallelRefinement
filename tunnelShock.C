@@ -64,16 +64,14 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    
-    cout << rank << ":" << size << "\n";
 
     #include "timeControls.H"
     #include "createGrid.H"
 
     if (rank == 0) {
         cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
+        cin.get();
     }
-    // cin.get();
 
     while (currentTime < endTime) {
         
@@ -91,15 +89,17 @@ int main(int argc, char** argv) {
             #include "AMR.H"
         }
 
-        // printGridFiles(tunnel);
-        // printGridFiles(tunnel,refineTunnel,refineColumns);
-        // cin.get();
+        printGridFiles(tunnel, refineTunnel, refineColumns, rank , size);
+        if (rank == 0) {
+            cin.get();
+        }
+       
     }
     
     if (rank == 0) {
         // printGridFiles(tunnel);
-        printGridFiles(tunnel,refineTunnel,refineColumns);
     }
+    printGridFiles(tunnel, refineTunnel, refineColumns, rank, size);
 
     MPI_Finalize();
     return 0;
