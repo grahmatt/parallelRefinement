@@ -180,16 +180,19 @@ refineTunnel.MyG_Minus.resize(refineTunnel.yPoints, vector<double>(refineTunnel.
 
 
 // Create MPI buffers
-if (rank == 0) {
-    double sendLeft, recvLeft, sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
-}
-else if (rank == size - 1) {
-    double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints], sendRight, recvRight;
-}
-else {
-    double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints],
-        sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
-}
+// if (rank == 0) {
+//     double sendLeft, recvLeft, sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
+// }
+// else if (rank == size - 1) {
+//     double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints], sendRight, recvRight;
+// }
+// else {
+//     double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints],
+//         sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
+// }
+double sendLeft[6*refineTunnel.yPoints], recvLeft[6*refineTunnel.yPoints],
+    sendRight[6*refineTunnel.yPoints], recvRight[6*refineTunnel.yPoints];
+int vectorSize[2];
 
 
 

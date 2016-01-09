@@ -8,20 +8,26 @@ void updateAMR
     const double rhoStart,
     int rank,
     int size,
-    double currentTime
+    double currentTime,
+    double sendLeft[],
+    double recvLeft[],
+    double sendRight[],
+    double recvRight[],
+    int vectorSize[]
 ) 
 {
-    int a, b, i, j, k, n, m, rowHalf, count, vectorSize[2], vectorSizeSend[2];
+    int a, b, i, j, k, n, m, rowHalf, ierr, count, vectorSizeSend[2];
     bool updateRefCol, existingCol;
     vector<int> oldRefCol;
     MPI_Status  status[2];
     MPI_Request send_request[2], recv_request[2];
-    if (rank != 0) {
-        vector<int> refineColumnsSendLeft, refineColumnsRecvLeft;
-    }
-    if (rank != size-1) {
-        vector<int> refineColumnsSendRight, refineColumnsRecvRight;
-    }
+    vector<int> refineColumnsSendLeft, refineColumnsRecvLeft, refineColumnsSendRight, refineColumnsRecvRight;
+    // if (rank != 0) {
+    //     vector<int> refineColumnsSendLeft, refineColumnsRecvLeft;
+    // }
+    // if (rank != size-1) {
+    //     vector<int> refineColumnsSendRight, refineColumnsRecvRight;
+    // }
 
     i = 0;
     n = -1;
@@ -263,6 +269,6 @@ void updateAMR
 
     if (!refineColumns.empty()) {
         updateBCs(refineCells, coarseCells, refineColumns, refineFactor,
-            rank, sendLeft, recvLeft, sendRight, recvRight);
+            rank, sendLeft, recvLeft, sendRight, recvRight,vectorSize);
     }
 }

@@ -3,10 +3,10 @@ void MUSCL
     grid& cells,
     const double soundSpeed,
     int rank,
-    double& sendLeft,
-    double& recvLeft,
-    double& sendRight,
-    double& recvRight
+    double sendLeft[],
+    double recvLeft[],
+    double sendRight[],
+    double recvRight[]
 ) 
 {
     int i, j;
@@ -131,17 +131,18 @@ void MUSCL
     const int refineFactor,
     int timeSpot,
     int rank,
-    double& sendLeft,
-    double& recvLeft,
-    double& sendRight,
-    double& recvRight
+    double sendLeft[],
+    double recvLeft[],
+    double sendRight[],
+    double recvRight[],
+    int vectorSize[]
 ) 
 {
     int i, j;
     grid refineCells_halfTime = refineCells;
     // MUSCL Half Time
     updateBCs(refineCells, coarseCells, refineColumns, refineFactor, timeSpot, 
-        rank, sendLeft, recvLeft, sendRight, recvRight);
+        rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,soundSpeed);
@@ -165,7 +166,7 @@ void MUSCL
 
     // MUSCL Full Time
     updateBCs(refineCells_halfTime, coarseCells, refineColumns, refineFactor, timeSpot+0.5*refineCells.dt, 
-        rank, sendLeft, recvLeft, sendRight, recvRight);
+        rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
             reconstructFlux(i,j,refineCells_halfTime,refineCells,soundSpeed);   

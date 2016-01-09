@@ -1,7 +1,7 @@
 // Active Mesh Refinement (AMR) only for x direction and no flux corrections on coarse boundary with refine cells
 for (n=0; n < refineFactor; ++n) {
     MUSCL(refineTunnel, soundSpeed, tunnel, refineColumns, refineFactor, n, 
-        rank, sendLeft, recvLeft, sendRight, recvRight);
+        rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize);
 }
 // Coarse inner cell center updates
 double sumRho, sumMx, sumMy;
