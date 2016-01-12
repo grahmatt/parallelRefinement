@@ -61,12 +61,18 @@ void updateBCs
                 for (phi=0; phi < 6; ++phi) {
                     for (n=0; n < cells.yPoints; ++n) {
                         switch (phi) {
-                            case 0: sendLeft[n] = cells.rho[n][0];   
+                            case 0: sendLeft[n] = cells.rho[n][0];
+                                        break;
                             case 1: sendLeft[n + cells.yPoints] = cells.Mx[n][0];
+                                        break;
                             case 2: sendLeft[n + phi*cells.yPoints] = cells.My[n][0];
+                                        break;
                             case 3: sendLeft[n + phi*cells.yPoints] = cells.rho[n][1];
+                                        break;
                             case 4: sendLeft[n + phi*cells.yPoints] = cells.Mx[n][1];
+                                        break;
                             case 5: sendLeft[n + phi*cells.yPoints] = cells.My[n][1];
+                                        break;
                         }
                     }
                 }
@@ -78,12 +84,18 @@ void updateBCs
                 for (phi=0; phi < 6; ++phi) {
                     for (n=0; n < cells.yPoints; ++n) {
                         switch (phi) {
-                            case 0: sendRight[n] = cells.rho[n][cells.xPoints-1];   
+                            case 0: sendRight[n] = cells.rho[n][cells.xPoints-1];
+                                        break; 
                             case 1: sendRight[n + cells.yPoints] = cells.Mx[n][cells.xPoints-1];
+                                        break;
                             case 2: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-1];
+                                        break;
                             case 3: sendRight[n + phi*cells.yPoints] = cells.rho[n][cells.xPoints-2];
+                                        break;
                             case 4: sendRight[n + phi*cells.yPoints] = cells.Mx[n][cells.xPoints-2];
+                                        break;
                             case 5: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-2];
+                                        break;
                         }
                     }
                 }
@@ -109,12 +121,18 @@ void updateBCs
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {
-                        case 0: cells.rhoBCsLR[n][0] = recvLeft[n];   
+                        case 0: cells.rhoBCsLR[n][0] = recvLeft[n];
+                                    break;
                         case 1: cells.MxBCsLR[n][0] = recvLeft[n + cells.yPoints];
+                                    break;
                         case 2: cells.MyBCsLR[n][0] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 3: cells.rhoBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 4: cells.MxBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 5: cells.MyBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                     }
                 }
             }
@@ -123,12 +141,18 @@ void updateBCs
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {
-                        case 0: cells.rhoBCsLR[n][1] = recvRight[n];   
+                        case 0: cells.rhoBCsLR[n][1] = recvRight[n];
+                                    break;
                         case 1: cells.MxBCsLR[n][1] = recvRight[n + cells.yPoints];
+                                    break;
                         case 2: cells.MyBCsLR[n][1] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 3: cells.rhoBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 4: cells.MxBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 5: cells.MyBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                     }
                 }
             }
@@ -302,7 +326,8 @@ void updateBCs
     double recvLeft[],
     double sendRight[],
     double recvRight[],
-    int vectorSize[]
+    int vectorSize[],
+    int vectorSizeSend[]
 ) 
 {
     int i, j, m, n, k, ierr, phi, count = 0;
@@ -425,7 +450,7 @@ void updateBCs
                         }
                     }
                 }
-                else if (vectorSize[0] == 0) {
+                else if (vectorSize[0] == 0 && vectorSizeSend[0] == 0) {
                     for (i=-1; i < coarseCells.yPoints; ++i) {
                         if (i == -1) {
                             rhoNow = (coarseCells.rhoBCsLR[0][0] - coarseCells.oldRhoLeft[i+1])/refineFactor*timeSpot + coarseCells.oldRhoLeft[i+1];
@@ -493,12 +518,18 @@ void updateBCs
                     for (phi=0; phi < 6; ++phi) {
                         for (n=0; n < cells.yPoints; ++n) {
                             switch (phi) {
-                                case 0: sendLeft[n] = cells.rho[n][0];   
+                                case 0: sendLeft[n] = cells.rho[n][0];
+                                            break;
                                 case 1: sendLeft[n + cells.yPoints] = cells.Mx[n][0];
+                                            break;
                                 case 2: sendLeft[n + phi*cells.yPoints] = cells.My[n][0];
+                                            break;
                                 case 3: sendLeft[n + phi*cells.yPoints] = cells.rho[n][1];
+                                            break;
                                 case 4: sendLeft[n + phi*cells.yPoints] = cells.Mx[n][1];
+                                            break;
                                 case 5: sendLeft[n + phi*cells.yPoints] = cells.My[n][1];
+                                            break;
                             }
                         }
                     }
@@ -572,7 +603,7 @@ void updateBCs
                         }   
                     }
                 }
-                else if (vectorSize[1] == 0) {
+                else if (vectorSize[1] == 0 && vectorSizeSend[1] == 0) {
                     for (i=-1; i < coarseCells.yPoints; ++i) {
                         if (i == -1) {
                             rhoNow = (coarseCells.rhoBCsLR[0][1] - coarseCells.oldRhoRight[i+1])/refineFactor*timeSpot + coarseCells.oldRhoRight[i+1];
@@ -640,12 +671,18 @@ void updateBCs
                     for (phi=0; phi < 6; ++phi) {
                         for (n=0; n < cells.yPoints; ++n) {
                             switch (phi) {
-                                case 0: sendRight[n] = cells.rho[n][cells.xPoints-1];   
+                                case 0: sendRight[n] = cells.rho[n][cells.xPoints-1];
+                                            break;
                                 case 1: sendRight[n + cells.yPoints] = cells.Mx[n][cells.xPoints-1];
+                                            break;
                                 case 2: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-1];
+                                            break;
                                 case 3: sendRight[n + phi*cells.yPoints] = cells.rho[n][cells.xPoints-2];
+                                            break;
                                 case 4: sendRight[n + phi*cells.yPoints] = cells.Mx[n][cells.xPoints-2];
+                                            break;
                                 case 5: sendRight[n + phi*cells.yPoints] = cells.My[n][cells.xPoints-2];
+                                            break;
                             }
                         }
                     }
@@ -665,18 +702,25 @@ void updateBCs
             }
         }
     }
+    ierr = MPI_Waitall(count, recv_request, status);
+
     if (count > 0) {
-        ierr = MPI_Waitall(count, recv_request, status);
         if (vectorSize[0] != 0) {
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {
-                        case 0: cells.rhoBCsLR[n][0] = recvLeft[n];   
+                        case 0: cells.rhoBCsLR[n][0] = recvLeft[n];
+                                    break;
                         case 1: cells.MxBCsLR[n][0] = recvLeft[n + cells.yPoints];
+                                    break;
                         case 2: cells.MyBCsLR[n][0] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 3: cells.rhoBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 4: cells.MxBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                         case 5: cells.MyBCsLR[n][2] = recvLeft[n + phi*cells.yPoints];
+                                    break;
                     }
                 }
             }
@@ -685,12 +729,18 @@ void updateBCs
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {
-                        case 0: cells.rhoBCsLR[n][1] = recvRight[n];   
+                        case 0: cells.rhoBCsLR[n][1] = recvRight[n];
+                                    break;
                         case 1: cells.MxBCsLR[n][1] = recvRight[n + cells.yPoints];
+                                    break;
                         case 2: cells.MyBCsLR[n][1] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 3: cells.rhoBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 4: cells.MxBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                         case 5: cells.MyBCsLR[n][3] = recvRight[n + phi*cells.yPoints];
+                                    break;
                     }
                 }
             }

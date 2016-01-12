@@ -75,8 +75,8 @@ int main(int argc, char** argv) {
 
     while (currentTime < endTime) {
         
-        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,
-            rhoStart,rank,size,currentTime, sendLeft, recvLeft, sendRight, recvRight, vectorSize);
+        updateAMR(refineTunnel, tunnel, refineFactor, refineColumns ,rhoShock, rhoStart, 
+            rank, size, currentTime, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
 
         currentTime += dt;
         if (rank == 0) {
@@ -90,17 +90,15 @@ int main(int argc, char** argv) {
         }
 
         printGridFiles(tunnel, refineTunnel, refineColumns, rank , size);
-        if (rank == 0) {
-            cin.get();
-        }
+        // if (rank == 0) {
+        //     cin.get();
+        // }
        
     }
     
-    if (rank == 0) {
-        // printGridFiles(tunnel);
-    }
     printGridFiles(tunnel, refineTunnel, refineColumns, rank, size);
 
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
     return 0;
 }

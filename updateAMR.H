@@ -13,21 +13,17 @@ void updateAMR
     double recvLeft[],
     double sendRight[],
     double recvRight[],
-    int vectorSize[]
+    int vectorSize[],
+    int vectorSizeSend[]
 ) 
 {
-    int a, b, i, j, k, n, m, rowHalf, ierr, count, vectorSizeSend[2];
+    int a, b, i, j, k, n, m, rowHalf, ierr, count;
     bool updateRefCol, existingCol;
     vector<int> oldRefCol;
     MPI_Status  status[2];
     MPI_Request send_request[2], recv_request[2];
-    vector<int> refineColumnsSendLeft, refineColumnsRecvLeft, refineColumnsSendRight, refineColumnsRecvRight;
-    // if (rank != 0) {
-    //     vector<int> refineColumnsSendLeft, refineColumnsRecvLeft;
-    // }
-    // if (rank != size-1) {
-    //     vector<int> refineColumnsSendRight, refineColumnsRecvRight;
-    // }
+    vector<int> refineColumnsSendLeft, refineColumnsSendRight;
+    int refineColumnsRecvLeft[coarseCells.yPoints], refineColumnsRecvRight[coarseCells.yPoints];
 
     i = 0;
     n = -1;
@@ -87,7 +83,7 @@ void updateAMR
                 refineColumns.push_back (refineColumns.back() + 1);
             }
             else if (coarseCells.connect[1]) {              // For parallel
-                for (b=0; b - a < 6; b++) {
+                for (b=0; b + a < 6; b++) {
                     refineColumnsSendRight.push_back(b);
                 }
                 break;
@@ -118,17 +114,17 @@ void updateAMR
 
     // Send refine cells across processors
     if (rank == 0) {
-        vectorSizeSend[0] = refineColumnsSendRight.size();
-        ierr = MPI_Isend(&vectorSizeSend[0], 1, MPI_INT, rank+1, 0 , MPI_COMM_WORLD, &send_request[0]);
-        ierr = MPI_Irecv(&vectorSize[0], 1, MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
+        vectorSizeSend[1] = refineColumnsSendRight.size();
+        ierr = MPI_Isend(&vectorSizeSend[1], 1, MPI_INT, rank+1, 0 , MPI_COMM_WORLD, &send_request[0]);
+        ierr = MPI_Irecv(&vectorSize[1], 1, MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
         ierr = MPI_Wait(recv_request, status);
 
-        if (vectorSizeSend[0] > 0) {
+        if (vectorSizeSend[1] > 0) {
             ierr = MPI_Isend(&refineColumnsSendRight[0], refineColumnsSendRight.size(), MPI_INT, rank+1, 0, MPI_COMM_WORLD, &send_request[0]);
         }
 
-        if (vectorSize[0] > 0) {
-            refineColumnsRecvRight.resize(vectorSize[0]);
+        if (vectorSize[1] > 0) {
+            // refineColumnsRecvRight.resize(vectorSize[0]);
             ierr = MPI_Irecv(&refineColumnsRecvRight[0], vectorSize[0], MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
             count = 1;
         }
@@ -147,7 +143,7 @@ void updateAMR
         }
 
         if (vectorSize[0] > 0) {
-            refineColumnsRecvLeft.resize(vectorSize[0]);
+            // refineColumnsRecvLeft.resize(vectorSize[0]);
             ierr = MPI_Irecv(&refineColumnsRecvLeft[0], vectorSize[0], MPI_INT, rank-1, 0, MPI_COMM_WORLD, &recv_request[0]);
             count = 1;
         }
@@ -162,6 +158,7 @@ void updateAMR
         vectorSizeSend[1] = refineColumnsSendRight.size();
         ierr = MPI_Isend(&vectorSizeSend[1], 1, MPI_INT, rank+1, 0 , MPI_COMM_WORLD, &send_request[1]);
         ierr = MPI_Irecv(&vectorSize[1], 1, MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[1]);
+        ierr = MPI_Waitall(2, recv_request, status);
 
         if (vectorSizeSend[0] > 0) {
             ierr = MPI_Isend(&refineColumnsSendLeft[0], refineColumnsSendLeft.size(), MPI_INT, rank-1, 0, MPI_COMM_WORLD, &send_request[0]);
@@ -172,37 +169,41 @@ void updateAMR
 
         count = 0;
         if (vectorSize[0] > 0) {
+            // refineColumnsRecvLeft.resize(vectorSize[0]);
             ierr = MPI_Irecv(&refineColumnsRecvLeft[0], vectorSize[0], MPI_INT, rank-1, 0, MPI_COMM_WORLD, &recv_request[0]);
             ++count;
         }
         if (vectorSize[1] > 0) {
             if (count == 0) {
+                // refineColumnsRecvRight.resize(vectorSize[1]);
                 ierr = MPI_Irecv(&refineColumnsRecvRight[0], vectorSize[1], MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
             }
             else {
+                // refineColumnsRecvRight.resize(vectorSize[1]);
                 ierr = MPI_Irecv(&refineColumnsRecvRight[0], vectorSize[1], MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[1]);
             }
             ++count;
         }
     }
+    ierr = MPI_Waitall(count, recv_request, status);
 
-    if (count > 0) {
-        ierr = MPI_Waitall(count, recv_request, status);
-    }
-    
     if (refineColumns.empty()) {
-        if (!refineColumnsRecvLeft.empty()) {
-            refineColumns = refineColumnsRecvLeft;
+        if (vectorSize[0] > 0) {
+            for (a=0; a < vectorSize[0]; ++a) {
+                refineColumns.push_back(refineColumnsRecvLeft[a]);
+            }
             updateRefCol = true;
         }
-        else if (!refineColumnsRecvRight.empty()) {
-            for (a=0; a < refineColumnsRecvRight.size(); a++) {
+        else if (vectorSize[1] > 0) {
+            cout << "rank: " << rank << " recvRight\n";
+            // TEST THIS
+            for (a=0; a < vectorSize[1]; a++) {
                 refineColumns.push_back(coarseCells.xPoints + refineColumnsRecvRight[a]);
             }
             updateRefCol = true;
         }
     }
-    
+
 
     // Grid update
     if (updateRefCol || refineColumns.size() != refineCells.xPoints/refineFactor) {
