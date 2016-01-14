@@ -113,7 +113,7 @@ void printGridFiles
     int size
 )
 {
-    int xPointsGlobal, ierr;
+    int xPointsGlobal, ierr, xPointsProc, xPointsCurrent;
     ofstream rhoFile, xFile, yFile, rhoFileRefine, xFileRefine, yFileRefine;
     MPI_Status  status[1];
     double recv_row[coarseCells.xPoints];
@@ -131,6 +131,7 @@ void printGridFiles
         xFile << " NumberOfRows: " << coarseCells.yPoints << "\n";
     }
     for (int i=0; i < coarseCells.yPoints; i++) {
+        xPointsCurrent = 0;
         if (rank == 0) {
             for (int p=0; p < size; ++p) {
                 if (p == 0) {
@@ -139,14 +140,17 @@ void printGridFiles
                         xFile << coarseCells.dx*j + 0.5*coarseCells.dx << " ";
                         yFile << coarseCells.dy*i + 0.5*coarseCells.dy << " ";
                     }
+                    xPointsCurrent += coarseCells.xPoints;
                 }
                 else {
-                    ierr = MPI_Recv(&recv_row, coarseCells.xPoints, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, status);
-                    for (int j=0; j < coarseCells.xPoints; j++) {
+                    ierr = MPI_Recv(&xPointsProc, 1, MPI_INT, p, 0, MPI_COMM_WORLD, status);
+                    ierr = MPI_Recv(&recv_row, xPointsProc, MPI_DOUBLE, p, 0, MPI_COMM_WORLD, status);
+                    for (int j=0; j < xPointsProc; j++) {
                         rhoFile << recv_row[j] << " ";
-                        xFile << coarseCells.dx*j + 0.5*coarseCells.dx + p*coarseCells.xPoints*coarseCells.dx << " ";
+                        xFile << coarseCells.dx*j + 0.5*coarseCells.dx + xPointsCurrent*coarseCells.dx << " ";
                         yFile << coarseCells.dy*i + 0.5*coarseCells.dy << " ";
                     }
+                    xPointsCurrent += xPointsProc;
                 }
             }
             if (i + 1 < coarseCells.yPoints) {
@@ -156,6 +160,7 @@ void printGridFiles
             }
         }
         else {
+            ierr = MPI_Ssend(&coarseCells.xPoints, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
             ierr = MPI_Ssend(&coarseCells.rho[i][0], coarseCells.xPoints, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD);
         }
     }

@@ -60,16 +60,22 @@ struct grid {
 int main(int argc, char** argv) {
 
     int rank, size;
+    double wallTime;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    if (rank == 0) {
+        wallTime = MPI_Wtime();
+    }
 
     #include "timeControls.H"
     #include "createGrid.H"
 
     if (rank == 0) {
         cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
-        cin.get();
+        // cin.get();
     }
 
     currentTime += dt;
@@ -94,7 +100,19 @@ int main(int argc, char** argv) {
         currentTime += dt;
     }
     MPI_Barrier(MPI_COMM_WORLD);
+    if (rank == 0) {
+        wallTime = MPI_Wtime() - wallTime;
+        cout << "ExecutionTime " << wallTime << "\n";
+        ofstream output;
+        output.precision(9);
+        output.open ("output.txt");
+        output << "Courant " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) 
+            << "\nExecutionTime " << wallTime << "\nCells " << xPointsGlobal*yPointsGlobal
+            << "\nNumberProcs " << size;
+        output.close();
+    }
     
+    MPI_Barrier(MPI_COMM_WORLD);
     printGridFiles(tunnel, refineTunnel, refineColumns, rank, size);
 
     MPI_Finalize();

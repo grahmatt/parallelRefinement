@@ -1,0 +1,22 @@
+#!/bin/sh
+#PBS -S /bin/sh
+#PBS -A eecs587f15_flux
+#PBS -N n100x500p5
+#PBS -l qos=flux
+#PBS -l walltime=00:05:00   # Max 4weeks 672hours
+#PBS -l nodes=1:ppn=5,pmem=2gb
+#PBS -m abe
+#PBS -M grahmatt@umich.edu
+#PBS -q flux
+#PBS -j oe
+#PBS -V
+
+#  Show list of CPUs you ran on, if you're running under PBS
+if [ -n "$PBS_NODEFILE" ]; then cat $PBS_NODEFILE; fi
+
+#  Change to the directory you submitted from
+if [ -n "$PBS_O_WORKDIR" ]; then cd $PBS_O_WORKDIR; fi
+pwd
+
+mpirun -np 5 bin/tunnelShock
+
