@@ -58,13 +58,6 @@ struct grid {
 #include "MUSCL.H"
 
 int main(int argc, char** argv) {
-    // if (argc < 2){
-    //     cout << "Missing matrix size: \"mpirun -np <#> hw3.bin <matrix size>\"" << endl;
-    //     return 0;
-    // }
-    // else {
-    //     n = atoi(argv[1]);
-    // }
 
     #include "timeControls.H"
     #include "createGrid.H"
@@ -72,12 +65,12 @@ int main(int argc, char** argv) {
     cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
     cin.get();
 
+    currentTime += dt;
     while (currentTime < endTime) {
 
-        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
-
-        currentTime += dt;
         cout << "t = " << currentTime << "\n";
+
+        updateAMR(refineTunnel,tunnel,refineFactor,refineColumns,rhoShock,rhoStart);
 
         MUSCL(tunnel,soundSpeed);
 
@@ -85,12 +78,12 @@ int main(int argc, char** argv) {
             #include "AMR.H"
         }
 
-        // printGridFiles(tunnel);
         // printGridFiles(tunnel,refineTunnel,refineColumns);
         // cin.get();
+
+        currentTime += dt;
     }
     
-    // printGridFiles(tunnel);
     printGridFiles(tunnel,refineTunnel,refineColumns);
 
     return 0;
