@@ -111,7 +111,7 @@ void updateBCs
             }
             else {
                 cout << "Error: Trying to transfer top and bottom cells!\n"
-                    << "updateBCs.H line 99 \n";
+                    << "updateBCs.H line 112 \n";
             }
         }
     }
@@ -172,7 +172,8 @@ void updateBCs
     double recvLeft[],
     double sendRight[],
     double recvRight[],
-    int vectorSize[]
+    int vectorSize[],
+    int vectorSizeSend[]
 ) 
 {
     int i, j, m, n, k;
@@ -246,7 +247,7 @@ void updateBCs
                         }
                     }
                 }
-                else if (vectorSize[0] == 0) {
+                else if (vectorSize[0] == 0 && vectorSizeSend[0] == 0) {
                     for (i=0; i < coarseCells.yPoints+2; ++i) {
                         if (i == 0) {
                             coarseCells.oldRhoLeft[i] = coarseCells.rhoBCsLR[0][0];
@@ -286,7 +287,7 @@ void updateBCs
                         }
                     }
                 }
-                else if (vectorSize[1] == 0) {
+                else if (vectorSize[1] == 0 && vectorSizeSend[1] == 0) {
                     for (i=0; i < coarseCells.yPoints+2; ++i) {
                         if (i == 0) {
                             coarseCells.oldRhoLeft[i] = coarseCells.rhoBCsLR[0][1];
@@ -705,7 +706,7 @@ void updateBCs
     ierr = MPI_Waitall(count, recv_request, status);
 
     if (count > 0) {
-        if (vectorSize[0] != 0) {
+        if (vectorSize[0] != 0 || vectorSizeSend[0] > 0) {
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {
@@ -725,7 +726,7 @@ void updateBCs
                 }
             }
         }
-        if (vectorSize[1] != 0) {
+        if (vectorSize[1] != 0 || vectorSizeSend[1] > 0) {
             for (phi=0; phi < 6; ++phi) {
                 for (n=0; n < cells.yPoints; ++n) {
                     switch (phi) {

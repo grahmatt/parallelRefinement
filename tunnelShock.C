@@ -60,7 +60,6 @@ struct grid {
 int main(int argc, char** argv) {
 
     int rank, size;
-
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -73,15 +72,15 @@ int main(int argc, char** argv) {
         cin.get();
     }
 
+    currentTime += dt;
     while (currentTime < endTime) {
         
-        updateAMR(refineTunnel, tunnel, refineFactor, refineColumns ,rhoShock, rhoStart, 
-            rank, size, currentTime, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
-
-        currentTime += dt;
         if (rank == 0) {
             cout << "t = " << currentTime << "\n";
         }
+
+        updateAMR(refineTunnel, tunnel, refineFactor, refineColumns ,rhoShock, rhoStart, 
+            rank, size, currentTime, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
 
         MUSCL(tunnel, soundSpeed, rank, sendLeft, recvLeft, sendRight, recvRight);
 
@@ -89,16 +88,15 @@ int main(int argc, char** argv) {
             #include "AMR.H"
         }
 
-        printGridFiles(tunnel, refineTunnel, refineColumns, rank , size);
-        // if (rank == 0) {
-        //     cin.get();
-        // }
-       
+        // printGridFiles(tunnel, refineTunnel, refineColumns, rank , size);
+        // if (rank == 0) {cin.get();}
+
+        currentTime += dt;
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     
     printGridFiles(tunnel, refineTunnel, refineColumns, rank, size);
 
-    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
     return 0;
 }

@@ -3,6 +3,7 @@ for (n=0; n < refineFactor; ++n) {
     MUSCL(refineTunnel, soundSpeed, tunnel, refineColumns, refineFactor, n, 
         rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
 }
+
 // Coarse inner cell center updates
 double sumRho, sumMx, sumMy;
 for (i=0; i < tunnel.yPoints; ++i) {

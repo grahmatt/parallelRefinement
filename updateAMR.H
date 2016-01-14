@@ -23,7 +23,7 @@ void updateAMR
     MPI_Status  status[2];
     MPI_Request send_request[2], recv_request[2];
     vector<int> refineColumnsSendLeft, refineColumnsSendRight;
-    int refineColumnsRecvLeft[coarseCells.yPoints], refineColumnsRecvRight[coarseCells.yPoints];
+    int refineColumnsRecvLeft[coarseCells.xPoints], refineColumnsRecvRight[coarseCells.xPoints];
 
     i = 0;
     n = -1;
@@ -60,7 +60,7 @@ void updateAMR
             }
             if (refineColumns.size() > 1 && 
                 refineColumns.back() - 1 != refineColumns[refineColumns.size() - 2]) {
-                cout << "Error: Only one refinement zone available\n";
+                cout << "Rank: " << rank << " Error: Only one refinement zone available\n";
                 bool clearVector = true;
                 for (a=refineColumns[0]; a < j+1; a++) {
                     if (clearVector) {
@@ -69,6 +69,12 @@ void updateAMR
                     }
                     refineColumns.push_back(a);
                 }
+
+                for (int z=0; z < refineColumns.size(); ++z) {
+                    cout << refineColumns[z] << " ";
+                }
+                cout << "\n";
+
             }
         }
     }
@@ -124,8 +130,7 @@ void updateAMR
         }
 
         if (vectorSize[1] > 0) {
-            // refineColumnsRecvRight.resize(vectorSize[0]);
-            ierr = MPI_Irecv(&refineColumnsRecvRight[0], vectorSize[0], MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
+            ierr = MPI_Irecv(&refineColumnsRecvRight[0], vectorSize[1], MPI_INT, rank+1, 0, MPI_COMM_WORLD, &recv_request[0]);
             count = 1;
         }
         else {
@@ -143,7 +148,6 @@ void updateAMR
         }
 
         if (vectorSize[0] > 0) {
-            // refineColumnsRecvLeft.resize(vectorSize[0]);
             ierr = MPI_Irecv(&refineColumnsRecvLeft[0], vectorSize[0], MPI_INT, rank-1, 0, MPI_COMM_WORLD, &recv_request[0]);
             count = 1;
         }
@@ -195,8 +199,6 @@ void updateAMR
             updateRefCol = true;
         }
         else if (vectorSize[1] > 0) {
-            cout << "rank: " << rank << " recvRight\n";
-            // TEST THIS
             for (a=0; a < vectorSize[1]; a++) {
                 refineColumns.push_back(coarseCells.xPoints + refineColumnsRecvRight[a]);
             }
@@ -270,6 +272,6 @@ void updateAMR
 
     if (!refineColumns.empty()) {
         updateBCs(refineCells, coarseCells, refineColumns, refineFactor,
-            rank, sendLeft, recvLeft, sendRight, recvRight,vectorSize);
+            rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
     }
 }
