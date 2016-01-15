@@ -142,7 +142,7 @@ void MUSCL
     int i, j;
     grid refineCells_halfTime = refineCells;
     // MUSCL Half Time
-    updateBCs(refineCells, coarseCells, refineColumns, refineFactor, timeSpot, 
+    updateBCs(refineCells, coarseCells, refineColumns, refineFactor, timeSpot+0.5*refineCells.dt, 
         rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {
@@ -166,7 +166,7 @@ void MUSCL
     }
 
     // MUSCL Full Time
-    updateBCs(refineCells_halfTime, coarseCells, refineColumns, refineFactor, timeSpot+0.5*refineCells.dt, 
+    updateBCs(refineCells_halfTime, coarseCells, refineColumns, refineFactor, timeSpot+refineCells.dt, 
         rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
     for (i=0; i < refineCells.yPoints; ++i) {
         for (j=0; j < refineCells.xPoints; ++j) {

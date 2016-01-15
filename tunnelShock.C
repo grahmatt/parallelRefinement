@@ -75,7 +75,6 @@ int main(int argc, char** argv) {
 
     if (rank == 0) {
         cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
-        // cin.get();
     }
 
     currentTime += dt;
@@ -95,7 +94,7 @@ int main(int argc, char** argv) {
         }
 
         // printGridFiles(tunnel, refineTunnel, refineColumns, rank , size);
-        // if (rank == 0) {cin.get();}
+        // if (rank == 0 && currentTime > 1.61) {cin.get();}
 
         currentTime += dt;
     }
@@ -112,7 +111,6 @@ int main(int argc, char** argv) {
         output.close();
     }
     
-    MPI_Barrier(MPI_COMM_WORLD);
     printGridFiles(tunnel, refineTunnel, refineColumns, rank, size);
 
     MPI_Finalize();

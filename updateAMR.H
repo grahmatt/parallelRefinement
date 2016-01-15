@@ -270,8 +270,15 @@ void updateAMR
         }
     }
 
+    // Random overwriting errors see updateBCs.H:line 249
+    // if (rank == 0 && currentTime > 1.61) {cout << "updateAMR PRE:\n"; for(int z=0; z < coarseCells.yPoints; ++z){cout << coarseCells.rho[z][refineColumns[0]-1] << " ";} cout << "\n"; cin.get();}
+
     if (!refineColumns.empty()) {
         updateBCs(refineCells, coarseCells, refineColumns, refineFactor,
             rank, sendLeft, recvLeft, sendRight, recvRight, vectorSize, vectorSizeSend);
     }
+
+    // if (rank == 0 && currentTime > 1.61) {cout << "updateAMR POST:\n"; for(int z=0; z < coarseCells.yPoints; ++z){cout << coarseCells.oldRhoLeft[z+1] << " ";} cout << "\n";
+    //         for(int z=0; z < coarseCells.yPoints; ++z){cout << coarseCells.rho[z][refineColumns[0]-1] << " ";} cout << "\n"; cin.get();}
+
 }

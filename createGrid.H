@@ -13,7 +13,7 @@ const double rhoShock = pressAtm/soundSpeed*(pow(mach,2.0)/(pow(0.88128485,2.0)*
 const double shockSpeed = soundSpeed*mach;
 
 // Global values
-const int xPointsGlobal = 50;
+const int xPointsGlobal = 200;
 const int yPointsGlobal = 10;
 
 

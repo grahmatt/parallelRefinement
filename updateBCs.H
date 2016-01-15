@@ -246,6 +246,10 @@ void updateBCs
                             coarseCells.oldMyLeft[i] = coarseCells.My[i-1][refineColumns[0]-1];
                         }
                     }
+                    // Random errors when this function finishes depending on the number of processors. 
+                    // May be due to the grid struct setup and how memory is allocated. 
+                    // One of the struct variables is probably overwriting the memory location.
+                    // for(int z=0; z < coarseCells.yPoints; ++z){cout << coarseCells.oldRhoLeft[z+1] << " ";} cout << " INSIDE\n";
                 }
                 else if (vectorSize[0] == 0 && vectorSizeSend[0] == 0) {
                     for (i=0; i < coarseCells.yPoints+2; ++i) {

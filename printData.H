@@ -172,7 +172,9 @@ void printGridFiles
 
     // Refined cells
     int procRefCellsSize[size], refineColStart[size], maxFineCells;
-    ierr = MPI_Reduce(&refinedCells.xPoints, &maxFineCells, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    ierr = MPI_Allreduce(&refinedCells.xPoints, &maxFineCells, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+
     double recv_rowFine[maxFineCells];
 
     ierr = MPI_Reduce(&refinedCells.xPoints, &xPointsGlobal, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
