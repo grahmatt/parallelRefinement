@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
+#include <time.h>
 using namespace std;
 
 struct grid {
@@ -59,11 +60,15 @@ struct grid {
 
 int main(int argc, char** argv) {
 
+    clock_t tStart;
+    double wallTime;
+    tStart = clock();
+
     #include "timeControls.H"
     #include "createGrid.H"
 
     cout << "Courant: " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) << "\n";
-    cin.get();
+    // cin.get();
 
     currentTime += dt;
     while (currentTime < endTime) {
@@ -84,7 +89,18 @@ int main(int argc, char** argv) {
         currentTime += dt;
     }
     
+    wallTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
+
     printGridFiles(tunnel,refineTunnel,refineColumns);
+
+    cout << "ExecutionTime " << wallTime << "\n";
+    ofstream output;
+    output.precision(9);
+    output.open ("output.txt");
+    output << "Courant " << shockSpeed*tunnel.dt/min(tunnel.dx,tunnel.dy) 
+        << "\nExecutionTime " << wallTime << "\nCells " << tunnel.xPoints*tunnel.yPoints
+        << "\nNumberProcs " << 1;
+    output.close();
 
     return 0;
 }

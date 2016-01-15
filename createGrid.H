@@ -18,7 +18,7 @@ const double shockSpeed = soundSpeed*mach;
 tunnel.dt = dt;
 tunnel.dx = 0.1;
 tunnel.dy = 0.1;
-tunnel.xPoints = 50;
+tunnel.xPoints = 200;
 tunnel.yPoints = 10; 
 // Grid initialize
 tunnel.rho.resize(tunnel.yPoints, vector<double>(tunnel.xPoints,rhoStart)); //[tunnel.yPoints][tunnel.xPoints];
